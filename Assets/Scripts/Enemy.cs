@@ -7,21 +7,22 @@ public class Enemy : Entity
     public EnemyIdleState IdleState { get; private set; }
     public EnemyMoveState MoveState { get; private set; }
     public EnemyAlertState AlertState { get; private set; }
+    public EnemyChaseState ChaseState { get; private set; }
     #endregion
 
     public NavMeshAgent agent { get; private set; }
     public VisionSensor visionSensor { get; private set; }
-
 
     protected override void Awake()
     {
         base.Awake();
         agent = GetComponent<NavMeshAgent>();
         visionSensor = GetComponent<VisionSensor>();
-        
+
         IdleState = new EnemyIdleState(this);
         MoveState = new EnemyMoveState(this);
         AlertState = new EnemyAlertState(this);
+        ChaseState = new EnemyChaseState(this);
     }
 
     protected override void Start()

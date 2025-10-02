@@ -777,18 +777,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VisionSensor
   viewRadius: 12
   viewAngle: 72
-  height: 2
   peripheralAngle: 60
-  timeToSpot: 0.2
+  height: 2
+  coreTimeToSpot: 0.2
+  peripheralSlow: 2
+  decayPerSecond: 0.6
+  investigateThreshold: 0.5
+  confirmThreshold: 1
   targetMask:
     serializedVersion: 2
     m_Bits: 1024
   obstacleMask:
     serializedVersion: 2
     m_Bits: 65536
-  currentTarget: {fileID: 0}
-  lastSeenPos: {x: 0, y: 0, z: 0}
-  seenTimer: 0
 --- !u!1 &442617273
 GameObject:
   m_ObjectHideFlags: 0

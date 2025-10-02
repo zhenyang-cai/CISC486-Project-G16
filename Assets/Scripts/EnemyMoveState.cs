@@ -1,9 +1,8 @@
 
 using UnityEngine;
 
-public class EnemyMoveState : EnemyState
+public class EnemyMoveState : EnemyPatrolState
 {
-    private Vector3 target;
 
     public EnemyMoveState(Enemy enemy) : base(enemy)
     {
@@ -12,27 +11,17 @@ public class EnemyMoveState : EnemyState
     public override void Enter()
     {
         base.Enter();
-        enemy.MoveTo(target);
+        enemy.MoveTo(GetCurrentPoint());
     }
 
     public override void Update()
     {
         base.Update();
 
-        if (enemy.visionSensor.currentTarget != null)
-        {
-            stateMachine.ChangeState(enemy.AlertState);
-            return;
-        }
-
         if (enemy.agent.remainingDistance <= enemy.agent.stoppingDistance && !enemy.agent.pathPending)
         {
+            SetNextPoint();
             stateMachine.ChangeState(enemy.IdleState);
         }
-    }
-
-    public void SetTarget(Vector3 pos)
-    {
-        target = pos;
     }
 }

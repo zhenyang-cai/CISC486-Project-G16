@@ -13,45 +13,35 @@ public class EnemyAlertState : EnemyState
     public override void Enter()
     {
         base.Enter();
-        enemy.agent.speed = 5.2f;
-        lastSeenPos = enemy.visionSensor.lastSeenPos;
+        enemy.agent.speed = 3.2f;
+        
+        lastSeenPos = enemy.visionSensor.LastSeenPos;
         enemy.MoveTo(lastSeenPos);
-        stateTimer = -5f;
     }
 
     public override void Exit()
     {
         base.Exit();
-        enemy.agent.speed = 2.0f;
-        enemy.visionSensor.currentTarget = null;
+        enemy.agent.speed = 2f;
     }
 
     public override void Update()
     {
         base.Update();
 
-        if (lastSeenPos != enemy.visionSensor.lastSeenPos)
+        if (lastSeenPos != enemy.visionSensor.LastSeenPos)
         {
-            lastSeenPos = enemy.visionSensor.lastSeenPos;
+            lastSeenPos = enemy.visionSensor.LastSeenPos;
             enemy.MoveTo(lastSeenPos);
-            stateTimer = -5f;
         }
 
         if (enemy.agent.remainingDistance <= enemy.agent.stoppingDistance && !enemy.agent.pathPending)
         {
-            if (stateTimer < -3)
-                stateTimer = 3f;
-            else if (stateTimer < 0)
+            if (enemy.visionSensor.State == VisionSensor.SuspicionState.None)
                 stateMachine.ChangeState(enemy.IdleState);
-
-            LookAround();
         }
-    }
 
-    public void LookAround(float angle = 100f, float speed = 2f)
-    {
-        float yaw = Mathf.Sin(Time.time * speed) * angle;
-        Quaternion targetRot = Quaternion.Euler(0, enemy.transform.eulerAngles.y + yaw, 0);
-        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRot, Time.deltaTime);
+        if (enemy.visionSensor.State == VisionSensor.SuspicionState.Confirmed)
+            stateMachine.ChangeState(enemy.ChaseState);
     }
 }
