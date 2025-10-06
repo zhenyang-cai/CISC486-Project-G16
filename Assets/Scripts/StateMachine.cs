@@ -1,4 +1,6 @@
 
+using UnityEngine;
+
 public class StateMachine
 {
     public EntityState CurrentState { get; private set; }
@@ -11,6 +13,7 @@ public class StateMachine
 
     public void ChangeState(EntityState newState)
     {
+        Debug.Log($"{CurrentState} => {newState}");
         CurrentState.Exit();
         CurrentState = newState;
         CurrentState.Enter();

@@ -24,10 +24,21 @@ public class EnemyChaseState : EnemyState
     public override void Update()
     {
         base.Update();
-
-        if (enemy.visionSensor.ConfirmedTarget)
+        var target = enemy.visionSensor.ConfirmedTarget;
+        if (target)
         {
-            enemy.MoveTo(enemy.visionSensor.ConfirmedTarget.position);
+            float dist = Vector3.Distance(enemy.transform.position, target.position);
+
+            if (dist > enemy.agent.stoppingDistance + 2f)
+            {
+                enemy.agent.isStopped = false;
+                enemy.agent.SetDestination(target.position);
+            }
+            else
+            {
+                enemy.agent.isStopped = true;
+                FaceTarget(target.position);
+            }
         }
         else if (enemy.visionSensor.State == VisionSensor.SuspicionState.Investigate)
         {
@@ -37,6 +48,17 @@ public class EnemyChaseState : EnemyState
         {
             stateMachine.ChangeState(enemy.IdleState);
         }
-        
+
     }
+    
+    void FaceTarget(Vector3 lookAt)
+{
+    Vector3 dir = lookAt - enemy.transform.position;
+    dir.y = 0;
+    if (dir.sqrMagnitude > 0.001f)
+    {
+        var rot = Quaternion.LookRotation(dir);
+        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, rot, Time.deltaTime * 8f);
+    }
+}
 }

@@ -32,6 +32,11 @@ public class EnemyPatrolState : EnemyState
             stateMachine.ChangeState(enemy.AlertState);
             return;
         }
+        else if (enemy.visionSensor.State == VisionSensor.SuspicionState.Confirmed)
+        {
+            stateMachine.ChangeState(enemy.ChaseState);
+            return;
+        }
     }
 
     public void SetPatrolPoints(List<Vector3> points)

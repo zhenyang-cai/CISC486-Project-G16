@@ -8,6 +8,8 @@ public class VisionSensor : MonoBehaviour
         Confirmed 
     }
 
+    public SuspicionState State = SuspicionState.None;
+
     [Header("FOV")]
     public float viewRadius = 10f;
     public float viewAngle = 30f;
@@ -15,7 +17,7 @@ public class VisionSensor : MonoBehaviour
     public float height = 2f;
 
     [Header("Rates")]
-    public float coreTimeToSpot = 0.2f;
+    public float coreTimeToSpot = 2f;
     public float peripheralSlow = 2f;
     public float decayPerSecond = 0.6f;
 
@@ -27,8 +29,6 @@ public class VisionSensor : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
-    
-    public SuspicionState State { get; private set; } = SuspicionState.None;
     [Range(0f,1f)] public float Suspicion { get; private set; }
     public Vector3 LastSeenPos { get; private set; }
     public Transform ConfirmedTarget { get; private set; }
