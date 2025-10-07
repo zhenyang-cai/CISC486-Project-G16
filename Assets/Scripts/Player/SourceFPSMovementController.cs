@@ -1,10 +1,9 @@
 // FPS Movement controller based on Source/Quake player movement
 // with help from https://www.youtube.com/watch?v=vBWcb_0HF1c
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SourceMovementController : MonoBehaviour
+public class SourceFPSMovementController : MonoBehaviour
 {
     [Header("Source movement variables")]
     // Source movement
@@ -13,8 +12,8 @@ public class SourceMovementController : MonoBehaviour
     [SerializeField] private float airAccel = 20.0f;
     [SerializeField] private float groundSpeedMax = 10.0f; // Max player velocity on the ground.
     [SerializeField] private float airSpeedMax = 10.0f; // Max player velocity in the air.
-    [SerializeField] private float maxSpeed = 10.0f; // Max velocity.
-    [SerializeField] private float groundFriction = 4.0f; // Ground friction
+    // [SerializeField] private float maxSpeed = 10.0f; // Max velocity.
+    [SerializeField] private float groundFriction = 6.0f; // Ground friction
     [SerializeField] private float wishSpeedCap = 1.0f;
 
     [Header("General movement variables")]
@@ -40,7 +39,7 @@ public class SourceMovementController : MonoBehaviour
     // [HideInInspector] public InputAction interactAction;
 
     private Vector3 currentVelocity;
-    private Boolean gamepad = false;
+    private bool gamepad = false;
     private float verticalRotation;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -52,12 +51,21 @@ public class SourceMovementController : MonoBehaviour
         GetInputRefs();
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        HandleRotation();
+        HandleMovement();
+    }
+
     private void OnControlsChanged()
     {
+        Debug.Log("Controls changed for player ID" + playerInputComponent.user.id);
         var device = playerInputComponent.GetDevice<Gamepad>();
         gamepad = device != null;
     }
 
+    // Input action refs to poll for player input
     private void GetInputRefs()
     {
         moveAction = playerInputComponent.actions.FindAction("Move");
@@ -69,19 +77,31 @@ public class SourceMovementController : MonoBehaviour
         // interactAction = playerInputComponent.actions.FindAction("Interact");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        HandleRotation();
-        HandleMovement();
-    }
-
-    private Vector3 CalculateWorldDirection()
+    // Helper function for calculating desired movement direction
+    private Vector3 GetMovementDirection()
     {
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         Vector3 inputDirection = new Vector3(moveInput.x, 0, moveInput.y);
         Vector3 worldDirection = transform.TransformDirection(inputDirection);
-        return worldDirection.normalized;
+        // return worldDirection.normalized;
+        return worldDirection;
+    }
+
+    private void HandleRotation()
+    {
+        Vector2 lookInput = lookAction.ReadValue<Vector2>();
+
+        float usedSensitivity = gamepad ? gamepadSensitivity : mouseSensitivity;
+
+        float mouseXRotation = lookInput.x * usedSensitivity;
+        float mouseYRotation = lookInput.y * usedSensitivity;
+
+        // X rotation
+        transform.Rotate(0, mouseXRotation, 0);
+
+        // Y rotation
+        verticalRotation = Mathf.Clamp(verticalRotation - mouseYRotation, -verticalLookRange, verticalLookRange);
+        mainCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
     }
 
     private void HandleJumping()
@@ -113,7 +133,7 @@ public class SourceMovementController : MonoBehaviour
     {
         HandleJumping();
 
-        Vector3 worldDirection = CalculateWorldDirection();
+        Vector3 worldDirection = GetMovementDirection();
         if (characterController.isGrounded)
             currentVelocity = GroundMovement(worldDirection, currentVelocity);
         else
@@ -165,20 +185,15 @@ public class SourceMovementController : MonoBehaviour
         return newVelocity + accelDirection * accelSpeed;
     }
 
-    private void HandleRotation()
+    void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        Vector2 lookInput = lookAction.ReadValue<Vector2>();
-
-        float usedSensitivity = gamepad ? gamepadSensitivity : mouseSensitivity;
-
-        float mouseXRotation = lookInput.x * usedSensitivity;
-        float mouseYRotation = lookInput.y * usedSensitivity;
-
-        // X rotation
-        transform.Rotate(0, mouseXRotation, 0);
-
-        // Y rotation
-        verticalRotation = Mathf.Clamp(verticalRotation - mouseYRotation, -verticalLookRange, verticalLookRange);
-        mainCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+        // When colliding with a wall, slide velocity along it
+        if ((characterController.collisionFlags & CollisionFlags.Sides) != 0)
+        {
+            // Getting projected velocity
+            Vector3 projectedVelocity = Vector3.ProjectOnPlane(currentVelocity, hit.normal);
+            currentVelocity = projectedVelocity;
+            // Debug.DrawRay(hit.point, projectedVelocity, Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f), 10f);
+        }
     }
 }
