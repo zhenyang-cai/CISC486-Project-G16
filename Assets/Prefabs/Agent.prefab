@@ -60,7 +60,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &4662701629226686412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,11 +188,19 @@ MonoBehaviour:
   wishSpeedCap: 1
   jumpForce: 7
   gravityMultiplier: 2
+  walkHeight: 2
+  crouchHeight: 1
+  crouchAccel: 5
+  crouchSpeedMax: 5
+  crouchSmoothingSpeed: 3
+  uncrouchObstacleTolerance: 0.1
   mouseSensitivity: 0.1
   gamepadSensitivity: 1
   verticalLookRange: 85
+  cameraHeight: 1.6
+  crouchCameraHeight: 0.8
   characterController: {fileID: 6432074060317653951}
-  mainCamera: {fileID: 8814308031965220969}
+  playerCamera: {fileID: 8814308031965220969}
   playerInputComponent: {fileID: 4662701629226686412}
   moveAction:
     m_Name: 
@@ -255,7 +263,7 @@ Transform:
   m_GameObject: {fileID: 4906876429474200035}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -291,8 +299,8 @@ Transform:
   m_GameObject: {fileID: 5030342757009565246}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0.25}
-  m_LocalScale: {x: 0.25, y: 1, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0.875, z: 0}
+  m_LocalScale: {x: 0.75, y: 0.25, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 568582976108957895}
@@ -514,7 +522,7 @@ Transform:
   m_GameObject: {fileID: 6797360017066191836}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6, z: 0}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

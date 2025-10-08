@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class SourceFPSMovementController : MonoBehaviour
 {
+    public Vector3 currentVelocity { get; private set; }
     [Header("Source movement variables")]
     // Source movement
     [SerializeField] private bool autoBhop = false;
@@ -19,15 +20,23 @@ public class SourceFPSMovementController : MonoBehaviour
     [Header("General movement variables")]
     [SerializeField] private float jumpForce = 7.0f;
     [SerializeField] private float gravityMultiplier = 2.0f;
+    [SerializeField] private float walkHeight = 2.0f;
+    [SerializeField] private float crouchHeight = 1.0f;
+    [SerializeField] private float crouchAccel = 5.0f; // Accel while crouching
+    [SerializeField] private float crouchSpeedMax = 5.0f; // Max crouching speed
+    [SerializeField] private float crouchSmoothingSpeed = 3.0f; // How quick the state transition is
+    [SerializeField] private float uncrouchObstacleTolerance = 0.1f; // How much space above head should there be
 
     [Header("Look parameters")]
     [SerializeField] private float mouseSensitivity = 0.1f;
     [SerializeField] private float gamepadSensitivity = 1f;
     [SerializeField] private float verticalLookRange = 85.0f;
+    [SerializeField] private float cameraHeight = 1.6f;
+    [SerializeField] private float crouchCameraHeight = 0.8f;
 
     [Header("References")]
     [SerializeField] private CharacterController characterController;
-    [SerializeField] private Camera mainCamera;
+    [SerializeField] private Camera playerCamera;
     [SerializeField] private PlayerInput playerInputComponent;
 
     [HideInInspector] public InputAction moveAction;
@@ -38,15 +47,21 @@ public class SourceFPSMovementController : MonoBehaviour
     // [HideInInspector] public InputAction attackAction;
     // [HideInInspector] public InputAction interactAction;
 
-    private Vector3 currentVelocity;
-    private bool gamepad = false;
+    // Private variables
+
     private float verticalRotation;
+    private float currentGroundSpeedMax;
+    private float currentGroundAccel;
+    private bool gamepad = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        currentGroundSpeedMax = groundSpeedMax;
+        currentGroundAccel = groundAccel;
 
         GetInputRefs();
     }
@@ -55,7 +70,10 @@ public class SourceFPSMovementController : MonoBehaviour
     void Update()
     {
         HandleRotation();
+        HandleCrouching();
         HandleMovement();
+
+        characterController.Move(currentVelocity * Time.deltaTime);
     }
 
     private void OnControlsChanged()
@@ -101,7 +119,7 @@ public class SourceFPSMovementController : MonoBehaviour
 
         // Y rotation
         verticalRotation = Mathf.Clamp(verticalRotation - mouseYRotation, -verticalLookRange, verticalLookRange);
-        mainCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
+        playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0, 0);
     }
 
     private void HandleJumping()
@@ -112,20 +130,23 @@ public class SourceFPSMovementController : MonoBehaviour
             {
                 if (jumpAction.IsPressed())
                 {
-                    currentVelocity.y = jumpForce;
+                    currentVelocity = new Vector3(currentVelocity.x, jumpForce, currentVelocity.z);
+                    // currentVelocity.y = jumpForce;
                 }
             }
             else
             {
                 if (jumpAction.WasPressedThisFrame())
                 {
-                    currentVelocity.y = jumpForce;
+                    currentVelocity = new Vector3(currentVelocity.x, jumpForce, currentVelocity.z);
+                    // currentVelocity.y = jumpForce;
                 }
             }
         }
         else
         {
-            currentVelocity.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
+            currentVelocity = new Vector3(currentVelocity.x, currentVelocity.y + Physics.gravity.y * gravityMultiplier * Time.deltaTime, currentVelocity.z);
+            // currentVelocity.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
         }
     }
 
@@ -138,8 +159,6 @@ public class SourceFPSMovementController : MonoBehaviour
             currentVelocity = GroundMovement(worldDirection, currentVelocity);
         else
             currentVelocity = AirMovement(worldDirection, currentVelocity);
-
-        characterController.Move(currentVelocity * Time.deltaTime);
     }
 
     private Vector3 GroundMovement(Vector3 accelDirection, Vector3 prevVelocity)
@@ -155,10 +174,10 @@ public class SourceFPSMovementController : MonoBehaviour
 
         // Apply ground movement acceleration
         float projectedSpeed = Vector3.Dot(newVelocity, accelDirection);
-        float accelSpeed = groundAccel * Time.deltaTime;
+        float accelSpeed = currentGroundAccel * Time.deltaTime;
 
-        if (projectedSpeed + accelSpeed > groundSpeedMax)
-            accelSpeed = groundSpeedMax - projectedSpeed;
+        if (projectedSpeed + accelSpeed > currentGroundSpeedMax)
+            accelSpeed = currentGroundSpeedMax - projectedSpeed;
 
         return newVelocity + accelDirection * accelSpeed;
     }
@@ -185,15 +204,65 @@ public class SourceFPSMovementController : MonoBehaviour
         return newVelocity + accelDirection * accelSpeed;
     }
 
+    // Handle crouching
+    private void HandleCrouching()
+    {
+        float crouchState = crouchAction.ReadValue<float>();
+
+        // Vector3 currentPosition = characterController.center;
+
+        if (crouchState == 1f)
+        {
+            currentGroundSpeedMax = crouchSpeedMax;
+            currentGroundAccel = crouchAccel;
+
+            // change height and adjust position
+            // characterController.height = crouchHeight;
+            characterController.height = Mathf.LerpUnclamped(characterController.height, crouchHeight, crouchSmoothingSpeed * Time.deltaTime);
+            // characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
+            // playerCamera.transform.localPosition = new Vector3(playerCamera.transform.localPosition.x, cameraHeight * (characterController.height / walkHeight), playerCamera.transform.localPosition.z);
+        }
+        else
+        {
+            if (!Physics.Raycast(new Vector3(transform.position.x, transform.position.y + characterController.height / 2, transform.position.z), Vector3.up, walkHeight - characterController.center.y + uncrouchObstacleTolerance))
+            {
+                currentGroundSpeedMax = groundSpeedMax;
+                currentGroundAccel = groundAccel;
+
+                // change height and adjust position
+                characterController.height = Mathf.LerpUnclamped(characterController.height, walkHeight, crouchSmoothingSpeed * Time.deltaTime);
+                // characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
+                // playerCamera.transform.localPosition = new Vector3(playerCamera.transform.localPosition.x, cameraHeight * (characterController.height / walkHeight), playerCamera.transform.localPosition.z);
+            }
+        }
+        characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
+        playerCamera.transform.localPosition = new Vector3(playerCamera.transform.localPosition.x, cameraHeight * (characterController.height / walkHeight), playerCamera.transform.localPosition.z);
+    }
+
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        Vector3 oldVelocity = currentVelocity;
+        // When colliding with a roof, reflect the player's velocity away
+        if ((characterController.collisionFlags & CollisionFlags.Above) != 0 && !characterController.isGrounded)
+        {
+            // For whatever reason it's double counting collisions w/ ceilings
+            // quick hack: the reflection should go away from the collision, otherwise it's invalid
+            Vector3 reflectedVelocity = Vector3.Reflect(currentVelocity, hit.normal);
+            if (Vector3.Dot(reflectedVelocity, hit.normal) >= 0)
+            {
+                currentVelocity = reflectedVelocity * 0.5f;
+            }
+            // Debug.DrawRay(hit.point, currentVelocity, new Color(0f, 1f, 0f), 10f);
+            // Debug.DrawRay(hit.point, hit.normal, new Color(1f, 1f, 1f), 10f);
+            // Debug.DrawRay(hit.point, oldVelocity, new Color(1f, 0f, 0f), 10f);
+        }
         // When colliding with a wall, slide velocity along it
-        if ((characterController.collisionFlags & CollisionFlags.Sides) != 0)
+        else if ((characterController.collisionFlags & CollisionFlags.Sides) != 0)
         {
             // Getting projected velocity
             Vector3 projectedVelocity = Vector3.ProjectOnPlane(currentVelocity, hit.normal);
             currentVelocity = projectedVelocity;
-            // Debug.DrawRay(hit.point, projectedVelocity, Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f), 10f);
         }
+
     }
 }
