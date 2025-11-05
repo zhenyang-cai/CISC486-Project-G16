@@ -52,13 +52,13 @@ public class EnemyChaseState : EnemyState
     }
     
     void FaceTarget(Vector3 lookAt)
-{
-    Vector3 dir = lookAt - enemy.transform.position;
-    dir.y = 0;
-    if (dir.sqrMagnitude > 0.001f)
     {
-        var rot = Quaternion.LookRotation(dir);
-        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, rot, Time.deltaTime * 8f);
+        Vector3 dir = lookAt - enemy.transform.position;
+        dir.y = 0;
+        if (dir.sqrMagnitude > 0.001f)
+        {
+            var rot = Quaternion.LookRotation(dir);
+            enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, rot, Time.deltaTime * 8f);
+        }
     }
-}
 }

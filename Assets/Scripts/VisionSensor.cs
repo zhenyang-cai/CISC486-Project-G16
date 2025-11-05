@@ -1,3 +1,6 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 public class VisionSensor : MonoBehaviour
@@ -9,57 +12,63 @@ public class VisionSensor : MonoBehaviour
     }
 
     public SuspicionState State = SuspicionState.None;
+    
+    [Header("View Settings")]
+    [Range(0f, 180f)] public float viewAngle = 60f;
+    public float viewRadius = 8f;
+    public float eyeHeight = 1.8f;
 
-    [Header("FOV")]
-    public float viewRadius = 10f;
-    public float viewAngle = 30f;
-    public float peripheralAngle = 60f;
-    public float height = 2f;
-
-    [Header("Rates")]
-    public float coreTimeToSpot = 2f;
-    public float peripheralSlow = 2f;
-    public float decayPerSecond = 0.6f;
-
-    [Header("Thresholds")]
-    [Range(0f,1f)] public float investigateThreshold = 0.5f;
-    [Range(0f,1f)] public float confirmThreshold = 1.0f;
+    [Header("Alert Range")]
+    [Range(0f, 15f)] public float alertness;
+    public float alertIncreaseRate = 1f;
+    public float alertDecayRate = 0.8f;
+    public float closeAlertRadius = 0.5f;
+    public float closeAlertIncreaseRate = 4f;
 
     [Header("Masks")]
-    public LayerMask targetMask;
-    public LayerMask obstacleMask;
+    public LayerMask targetMasks;
+    public LayerMask obstacleMasks;
 
-    [Range(0f,1f)] public float Suspicion { get; private set; }
+    private readonly Collider[] detectedTargets = new Collider[8];
+    
+    private float lastSeenUpdateInterval = 0.5f;
+    private float nextSeenUpdateTime;
     public Vector3 LastSeenPos { get; private set; }
     public Transform ConfirmedTarget { get; private set; }
 
     void Update()
     {
-        Transform target = DetectTarget(out bool inCore, out bool inPeri);
-
-        if (target)
-        {
-            float timeToSpot = inCore ? coreTimeToSpot : coreTimeToSpot * peripheralSlow;
-            float rate = 1f / Mathf.Max(1e-4f, timeToSpot);
-
-            Suspicion = Mathf.MoveTowards(Suspicion, 1f, rate * Time.deltaTime);
-            
-            LastSeenPos = target.position;
-        }
+        bool close = CheckCloseRange();
+        if (close)
+            alertness = Mathf.MoveTowards(alertness, 15f, closeAlertIncreaseRate * Time.deltaTime);
         else
         {
-            Suspicion = Mathf.MoveTowards(Suspicion, 0f, decayPerSecond * Time.deltaTime);
+            bool view = CheckViewRange();
+            if (view)
+            {
+                float dist = Vector3.Distance(transform.position, detectedTargets[0].transform.position);
+                float factor = 1f - Mathf.Clamp01(dist / viewRadius);
+                float dynamicRate = alertIncreaseRate * (1f + factor);
+                alertness = Mathf.MoveTowards(alertness, 15f, dynamicRate * Time.deltaTime);
+            }
+            else
+                alertness = Mathf.MoveTowards(alertness, 0f, alertDecayRate * Time.deltaTime);
         }
 
-        if (Suspicion >= confirmThreshold)
+        if (alertness > 12)
         {
             State = SuspicionState.Confirmed;
-            ConfirmedTarget = target;
+            ConfirmedTarget = detectedTargets[0] ? detectedTargets[0].transform : null;
         }
-        else if (Suspicion >= investigateThreshold)
+        else if (alertness > 6)
         {
             State = SuspicionState.Investigate;
             ConfirmedTarget = null;
+            if (Time.time >= nextSeenUpdateTime && detectedTargets[0])
+            {
+                LastSeenPos = detectedTargets[0].transform.position;
+                nextSeenUpdateTime = Time.time + lastSeenUpdateInterval;
+            }
         }
         else
         {
@@ -68,68 +77,68 @@ public class VisionSensor : MonoBehaviour
         }
     }
 
-    Transform DetectTarget(out bool inCoreFov, out bool inPeripheral)
+    bool CheckViewRange()
     {
-        inCoreFov = false;
-        inPeripheral = false;
-        Transform target = null;
-        Collider[] hits = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
+        int count = Physics.OverlapSphereNonAlloc(transform.position, viewRadius, detectedTargets, targetMasks);
+        Vector3 eye = transform.position + Vector3.up * eyeHeight;
 
-        foreach (var h in hits)
+        for (int i = 0; i < count; i++)
         {
-            if (ClassifyVisibility(h.transform, out bool core, out bool peri, out float dist))
+            Transform t = detectedTargets[i].transform;
+            Vector3 dir = t.position + Vector3.up * eyeHeight - eye;
+            float angle = Vector3.Angle(transform.forward, dir);
+
+            if (angle <= viewAngle * 0.5f)
             {
-                target = h.transform;
-                inCoreFov = core;
-                inPeripheral = peri;
+                if (!Physics.Raycast(eye, dir.normalized, dir.magnitude, obstacleMasks))
+                    return true;
             }
         }
-        return target;
+        return false;
     }
 
-    bool ClassifyVisibility(Transform target, out bool inCoreFov, out bool inPeripheral, out float dist)
+    bool CheckCloseRange()
     {
-        Vector3 eye = transform.position + Vector3.up * height;
-        Vector3 to = target.position + Vector3.up * height - eye;
+        Vector3 basePos = transform.position;
+        Vector3 topPos = basePos + Vector3.up * eyeHeight;
 
-        dist = to.magnitude;
-        
-        if (dist > viewRadius)
+        int count = Physics.OverlapCapsuleNonAlloc(basePos, topPos, closeAlertRadius, detectedTargets, targetMasks);
+        for (int i = 0; i < count; i++)
         {
-            inCoreFov = inPeripheral = false;
-            return false;
+            if (!detectedTargets[i].isTrigger)
+                return true;
         }
-
-        float ang = Vector3.Angle(transform.forward, to);
-        inCoreFov = ang <= viewAngle * 0.5f;
-        inPeripheral = !inCoreFov && ang <= peripheralAngle * 0.5f;
-        
-        if (!(inCoreFov || inPeripheral)) 
-            return false;
-
-        if (Physics.Raycast(eye, to.normalized, dist, obstacleMask)) 
-            return false;
-
-        return true;
+        return false;
     }
 
     void OnDrawGizmosSelected()
     {
-        Vector3 p = transform.position + Vector3.up * height;
-        Gizmos.color = Color.cyan; Gizmos.DrawWireSphere(transform.position, viewRadius);
-        DrawArc(p, viewAngle, new Color(1,1,0,1));
-        DrawArc(p, peripheralAngle, new Color(1,1,0,0.2f));
+        bool close = Application.isPlaying && CheckCloseRange();
+        bool view = Application.isPlaying && CheckViewRange();
+        Gizmos.color = close ? Color.red :
+                    view ? Color.yellow :
+                    Color.green;
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(p, p + Vector3.up * (1f + Suspicion));
+        Vector3 origin = transform.position + Vector3.up * eyeHeight;
+
+        Vector3 basePos = transform.position;
+        Vector3 topPos = basePos + Vector3.up * eyeHeight;
+        Gizmos.DrawWireSphere(basePos, closeAlertRadius);
+        Gizmos.DrawWireSphere(topPos, closeAlertRadius);
+
+    #if UNITY_EDITOR
+        Handles.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.15f);
+        Handles.DrawSolidArc(
+            origin,
+            Vector3.up,
+            Quaternion.Euler(0, -viewAngle / 2f, 0) * transform.forward,
+            viewAngle,
+            viewRadius
+        );
+    #endif
+
+        Gizmos.DrawLine(origin, origin + Quaternion.Euler(0, -viewAngle / 2f, 0) * transform.forward * viewRadius);
+        Gizmos.DrawLine(origin, origin + Quaternion.Euler(0,  viewAngle / 2f, 0) * transform.forward * viewRadius);
     }
 
-    void DrawArc(Vector3 p, float angle, Color c)
-    {
-        Gizmos.color = c;
-        Vector3 r = Quaternion.Euler(0, -angle/2f, 0) * transform.forward;
-        Vector3 l = Quaternion.Euler(0,  angle/2f, 0) * transform.forward;
-        Gizmos.DrawLine(p, p + r * viewRadius);
-        Gizmos.DrawLine(p, p + l * viewRadius);
-    }
 }

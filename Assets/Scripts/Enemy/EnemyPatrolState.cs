@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class EnemyPatrolState : EnemyState
@@ -11,11 +12,7 @@ public class EnemyPatrolState : EnemyState
     public EnemyPatrolState(Enemy enemy) : base(enemy)
     {
         CurrentIndex = 0;
-        PatrolPoints = new List<Vector3>
-        {
-            new(-6, 0, 18),
-            new(-6, 0, 5)
-        };
+        PatrolPoints = enemy.PatrolPoints.Select(t => t.position).ToList();
     }
 
     public override void Enter()
@@ -46,12 +43,17 @@ public class EnemyPatrolState : EnemyState
 
     protected Vector3 GetCurrentPoint()
     {
-        return PatrolPoints[CurrentIndex];
+        if (PatrolPoints.Count > 0)
+        {
+            return PatrolPoints[CurrentIndex];
+        }
+        return enemy.transform.position;
     }
 
     protected void SetNextPoint()
     {
-        CurrentIndex = (CurrentIndex + 1) % PatrolPoints.Count;
+        if (PatrolPoints.Count > 0)
+            CurrentIndex = (CurrentIndex + 1) % PatrolPoints.Count;
     }
 
 }

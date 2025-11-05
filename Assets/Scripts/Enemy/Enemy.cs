@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,6 +10,8 @@ public class Enemy : Entity
     public EnemyAlertState AlertState { get; private set; }
     public EnemyChaseState ChaseState { get; private set; }
     #endregion
+
+    public List<Transform> PatrolPoints;
 
     public NavMeshAgent agent { get; private set; }
     public VisionSensor visionSensor { get; private set; }
