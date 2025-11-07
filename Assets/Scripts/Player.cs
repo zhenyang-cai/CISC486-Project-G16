@@ -46,6 +46,7 @@ public class Player : Entity
     protected override void Update()
     {
         base.Update();
+        anim.SetBool("Grounded", isGrounded);
         JumpAndGravity();
         Move();
     }
@@ -98,7 +99,7 @@ public class Player : Entity
 
     private void JumpAndGravity()
     {
-        if (Grounded)
+        if (isGrounded)
         {
             anim.SetBool("Jump", false);
             anim.SetBool("FreeFall", false);

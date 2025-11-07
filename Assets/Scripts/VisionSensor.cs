@@ -16,13 +16,13 @@ public class VisionSensor : MonoBehaviour
     [Header("View Settings")]
     [Range(0f, 180f)] public float viewAngle = 60f;
     public float viewRadius = 8f;
-    public float eyeHeight = 1.8f;
+    public float eyeHeight = 1.68f;
 
     [Header("Alert Range")]
     [Range(0f, 15f)] public float alertness;
     public float alertIncreaseRate = 1f;
     public float alertDecayRate = 0.8f;
-    public float closeAlertRadius = 0.5f;
+    public float closeAlertRadius = 1f;
     public float closeAlertIncreaseRate = 4f;
 
     [Header("Masks")]

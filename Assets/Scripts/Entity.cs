@@ -10,13 +10,10 @@ public abstract class Entity : MonoBehaviour
     public StateMachine stateMachine { get; private set; }
 
     [SerializeField] protected LayerMask GroundLayers;
-    [SerializeField] protected bool Grounded;
+    [SerializeField] protected bool isGrounded;
     [SerializeField] private float GroundedOffset = -0.14f;
     [SerializeField] private float GroundedRadius = 0.28f;
-    public AudioClip LandingAudioClip;
-    public AudioClip[] FootstepAudioClips;
-    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
-
+    
     protected virtual void Awake()
     {
         anim = GetComponent<Animator>();
@@ -46,15 +43,17 @@ public abstract class Entity : MonoBehaviour
     {
         Vector3 spherePosition = transform.position + Vector3.down * GroundedOffset;
 
-        Grounded = Physics.CheckSphere(
+        isGrounded = Physics.CheckSphere(
             spherePosition,
             GroundedRadius,
             GroundLayers,
             QueryTriggerInteraction.Ignore
         );
-
-        anim.SetBool("Grounded", Grounded);
     }
+
+    public AudioClip LandingAudioClip;
+    public AudioClip[] FootstepAudioClips;
+    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
     private void OnLand(AnimationEvent animationEvent)
     {
@@ -75,4 +74,5 @@ public abstract class Entity : MonoBehaviour
             }
         }
     }
+
 }

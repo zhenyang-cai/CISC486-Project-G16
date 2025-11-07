@@ -32,7 +32,12 @@ public class EnemyAlertState : EnemyState
         if (lastSeenPos != enemy.visionSensor.LastSeenPos)
         {
             lastSeenPos = enemy.visionSensor.LastSeenPos;
-            enemy.MoveTo(lastSeenPos);
+
+            float dist = Vector3.Distance(enemy.transform.position, lastSeenPos);
+            if (dist <= 2f)
+                enemy.FaceTarget(lastSeenPos);
+            else
+                enemy.MoveTo(lastSeenPos);
         }
 
         if (enemy.agent.remainingDistance <= enemy.agent.stoppingDistance && !enemy.agent.pathPending)

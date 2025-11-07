@@ -27,18 +27,11 @@ public class EnemyChaseState : EnemyState
         var target = enemy.visionSensor.ConfirmedTarget;
         if (target)
         {
-            float dist = Vector3.Distance(enemy.transform.position, target.position);
-
-            if (dist > enemy.agent.stoppingDistance + 2f)
-            {
-                enemy.agent.isStopped = false;
-                enemy.agent.SetDestination(target.position);
-            }
-            else
-            {
-                enemy.agent.isStopped = true;
-                FaceTarget(target.position);
-            }
+            Vector3 dir = (target.position - enemy.transform.position).normalized;
+            Vector3 stopPos = target.position - dir * 2f;
+            
+            enemy.FaceTarget(target.position);
+            enemy.MoveTo(stopPos);
         }
         else if (enemy.visionSensor.State == VisionSensor.SuspicionState.Investigate)
         {
@@ -51,14 +44,5 @@ public class EnemyChaseState : EnemyState
 
     }
     
-    void FaceTarget(Vector3 lookAt)
-    {
-        Vector3 dir = lookAt - enemy.transform.position;
-        dir.y = 0;
-        if (dir.sqrMagnitude > 0.001f)
-        {
-            var rot = Quaternion.LookRotation(dir);
-            enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, rot, Time.deltaTime * 8f);
-        }
-    }
+    
 }

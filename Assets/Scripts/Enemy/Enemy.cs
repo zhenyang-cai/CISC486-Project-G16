@@ -37,6 +37,7 @@ public class Enemy : Entity
     protected override void Update()
     {
         base.Update();
+        anim.SetBool("Grounded", isGrounded);
         anim.SetFloat("Speed", agent.velocity.magnitude);
         anim.SetFloat("MotionSpeed", agent.desiredVelocity.magnitude / agent.speed);
     }
@@ -45,6 +46,17 @@ public class Enemy : Entity
     {
         if (NavMesh.SamplePosition(pos, out var hit, 1f, NavMesh.AllAreas))
             agent.SetDestination(hit.position);
+    }
+
+    public void FaceTarget(Vector3 lookAt)
+    {
+        Vector3 dir = lookAt - transform.position;
+        dir.y = 0;
+        if (dir.sqrMagnitude > 0.001f)
+        {
+            var rot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 8f);
+        }
     }
 
 }
