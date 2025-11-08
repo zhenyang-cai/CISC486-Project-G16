@@ -1,14 +1,18 @@
 using System.Collections.Generic;
+using QFramework;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : Entity
+public class Enemy : Entity, IController
 {
+    public IArchitecture GetArchitecture() => Game.Interface;
+    
     #region States
     public EnemyIdleState IdleState { get; private set; }
     public EnemyMoveState MoveState { get; private set; }
     public EnemyAlertState AlertState { get; private set; }
     public EnemyChaseState ChaseState { get; private set; }
+    public EnemyAttackState AttackState { get; private set; }
     #endregion
 
     public List<Transform> PatrolPoints;
@@ -26,12 +30,17 @@ public class Enemy : Entity
         MoveState = new EnemyMoveState(this);
         AlertState = new EnemyAlertState(this);
         ChaseState = new EnemyChaseState(this);
+        AttackState = new EnemyAttackState(this);
     }
 
     protected override void Start()
     {
         base.Start();
         stateMachine.Initialize(IdleState);
+        this.RegisterEvent<PlayerSpottedEvent>(e =>
+        {
+            visionSensor.TriggerAlert(e.Target);
+        });
     }
 
     protected override void Update()

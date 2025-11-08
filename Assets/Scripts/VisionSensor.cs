@@ -20,10 +20,10 @@ public class VisionSensor : MonoBehaviour
 
     [Header("Alert Range")]
     [Range(0f, 15f)] public float alertness;
-    public float alertIncreaseRate = 1f;
+    public float alertIncreaseRate = 4f;
     public float alertDecayRate = 0.8f;
     public float closeAlertRadius = 1f;
-    public float closeAlertIncreaseRate = 4f;
+    public float closeAlertIncreaseRate = 8f;
 
     [Header("Masks")]
     public LayerMask targetMasks;
@@ -35,6 +35,16 @@ public class VisionSensor : MonoBehaviour
     private float nextSeenUpdateTime;
     public Vector3 LastSeenPos { get; private set; }
     public Transform ConfirmedTarget { get; private set; }
+
+    public void TriggerAlert(Transform target)
+    {
+        if (target == null) return;
+
+        ConfirmedTarget = target;
+        LastSeenPos = target.position;
+        alertness = 15f;
+        State = SuspicionState.Confirmed;
+    }
 
     void Update()
     {

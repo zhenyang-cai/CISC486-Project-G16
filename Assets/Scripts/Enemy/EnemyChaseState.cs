@@ -1,4 +1,5 @@
 
+using QFramework;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class EnemyChaseState : EnemyState
     {
         base.Enter();
         enemy.agent.speed = 5.2f;
+        var target = enemy.visionSensor.ConfirmedTarget;
+        if (target)
+            enemy.SendCommand(new PlayerSpottedCommand(target));
     }
 
     public override void Exit()
@@ -29,11 +33,25 @@ public class EnemyChaseState : EnemyState
         {
             Vector3 dir = (target.position - enemy.transform.position).normalized;
             Vector3 stopPos = target.position - dir * 2f;
-            
+
             enemy.FaceTarget(target.position);
             enemy.MoveTo(stopPos);
+
+            float dist = Vector3.Distance(enemy.transform.position, target.position);
+            if (dist <= 6f)
+            {
+                stateMachine.ChangeState(enemy.AttackState);
+                return;
+            }
         }
-        else if (enemy.visionSensor.State == VisionSensor.SuspicionState.Investigate)
+        else
+        {
+            Vector3 dir = (enemy.visionSensor.LastSeenPos - enemy.transform.position).normalized;
+            Vector3 stopPos = enemy.visionSensor.LastSeenPos - dir * 2f;
+            enemy.MoveTo(stopPos);
+        }
+
+        if (enemy.visionSensor.State == VisionSensor.SuspicionState.Investigate)
         {
             stateMachine.ChangeState(enemy.AlertState);
         }
