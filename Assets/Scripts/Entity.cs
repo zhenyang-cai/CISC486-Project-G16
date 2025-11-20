@@ -1,6 +1,8 @@
+using FishNet.Object;
 using UnityEngine;
 
-public abstract class Entity : MonoBehaviour
+
+public abstract class Entity : NetworkBehaviour
 {
     #region Components
     public Animator anim { get; private set; }

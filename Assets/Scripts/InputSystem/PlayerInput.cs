@@ -14,7 +14,7 @@ public class PlayerInput : MonoBehaviour
 	public bool analogMovement;
 
 	[Header("Mouse Cursor Settings")]
-	public bool cursorLocked = true;
+	public bool cursorLocked = false;
 	public bool cursorInputForLook = true;
 
 	public void OnMove(InputValue value)
@@ -24,10 +24,10 @@ public class PlayerInput : MonoBehaviour
 
 	public void OnLook(InputValue value)
 	{
-		if (cursorInputForLook)
-		{
-			LookInput(value.Get<Vector2>());
-		}
+		if (cursorInputForLook && aiming)
+        {
+            LookInput(value.Get<Vector2>());
+        }
 	}
 
 	public void OnJump(InputValue value)
@@ -42,7 +42,9 @@ public class PlayerInput : MonoBehaviour
 
 	public void OnAiming(InputValue value)
 	{
+		Debug.Log(value);
 		AimingInput(value.isPressed);
+		SetCursorState(aiming);
 	}
 
 	public void MoveInput(Vector2 newMoveDirection)
@@ -72,7 +74,7 @@ public class PlayerInput : MonoBehaviour
 
 	private void OnApplicationFocus(bool hasFocus)
 	{
-		SetCursorState(cursorLocked);
+		SetCursorState(aiming);
 	}
 
 	private void SetCursorState(bool newState)

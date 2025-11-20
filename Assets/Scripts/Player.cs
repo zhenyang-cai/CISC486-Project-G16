@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class Player : Entity
@@ -29,6 +30,16 @@ public class Player : Entity
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if (IsOwner)
+        {
+            CinemachineCamera cc = FindAnyObjectByType<CinemachineCamera>();
+            cc.Follow = transform.Find("PlayerCameraRoot");
+        }
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -45,6 +56,8 @@ public class Player : Entity
 
     protected override void Update()
     {
+        if (!IsOwner) return;
+        
         base.Update();
         anim.SetBool("Grounded", isGrounded);
         JumpAndGravity();
@@ -85,14 +98,18 @@ public class Player : Entity
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
         }
 
-
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
         controller.Move(
             targetDirection.normalized * (_speed * Time.deltaTime) +
             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime
         );
-
+        
+        Debug.Log(Input.move);
+        Debug.Log(_speed);
+        Debug.Log(targetSpeed);
+        Debug.Log(_animationBlend);
+        
         anim.SetFloat("Speed", _animationBlend);
         anim.SetFloat("MotionSpeed", inputMagnitude);
     }

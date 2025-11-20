@@ -5,14 +5,11 @@ using UnityEngine;
 
 public class EnemyPatrolState : EnemyState
 {
-
-    public List<Vector3> PatrolPoints { get; private set; }
     public int CurrentIndex { get; private set; }
 
     public EnemyPatrolState(Enemy enemy) : base(enemy)
     {
         CurrentIndex = 0;
-        PatrolPoints = enemy.PatrolPoints.Select(t => t.position).ToList();
     }
 
     public override void Enter()
@@ -36,13 +33,9 @@ public class EnemyPatrolState : EnemyState
         }
     }
 
-    public void SetPatrolPoints(List<Vector3> points)
-    {
-        PatrolPoints = points;
-    }
-
     protected Vector3 GetCurrentPoint()
     {
+        List<Vector3> PatrolPoints = enemy.PatrolPoints.Select(t => t.position).ToList();
         if (PatrolPoints.Count > 0)
         {
             return PatrolPoints[CurrentIndex];
@@ -52,6 +45,7 @@ public class EnemyPatrolState : EnemyState
 
     protected void SetNextPoint()
     {
+        List<Vector3> PatrolPoints = enemy.PatrolPoints.Select(t => t.position).ToList();
         if (PatrolPoints.Count > 0)
             CurrentIndex = (CurrentIndex + 1) % PatrolPoints.Count;
     }

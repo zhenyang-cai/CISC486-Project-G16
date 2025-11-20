@@ -20,6 +20,13 @@ public class Enemy : Entity, IController
     public NavMeshAgent agent { get; private set; }
     public VisionSensor visionSensor { get; private set; }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if (!NetworkManager.IsServerStarted)
+            agent.enabled = false;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -45,6 +52,8 @@ public class Enemy : Entity, IController
 
     protected override void Update()
     {
+        if (!IsServerInitialized) return;
+
         base.Update();
         anim.SetBool("Grounded", isGrounded);
         anim.SetFloat("Speed", agent.velocity.magnitude);
