@@ -12,12 +12,12 @@ public class PlayerCamera : MonoBehaviour
     private float cinemachineTargetPitch;
 
     #region Input System
-    public PlayerInput Input { get; private set; }
+    public CustomPlayerInput Input { get; private set; }
     #endregion
 
     void Awake()
     {
-        Input = GetComponent<PlayerInput>();
+        Input = GetComponent<CustomPlayerInput>();
     }
 
     void Start()

@@ -8,7 +8,7 @@ public class Player : Entity
     #endregion
 
     #region Input System
-    public PlayerInput Input { get; private set; }
+    public CustomPlayerInput Input { get; private set; }
     #endregion
     private GameObject mainCamera;
 
@@ -44,7 +44,7 @@ public class Player : Entity
     {
         base.Awake();
         mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-        Input = GetComponent<PlayerInput>();
+        Input = GetComponent<CustomPlayerInput>();
         IdleState = new PlayerIdleState(this);
     }
 
