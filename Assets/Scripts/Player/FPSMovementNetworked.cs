@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public class FPSMovementNetworked : NetworkBehaviour
 {
-    public Vector3 currentVelocity { get; private set; }
+    
     [Header("Source movement variables")]
     // Source movement
     public bool autoBhop = false;
@@ -59,6 +59,7 @@ public class FPSMovementNetworked : NetworkBehaviour
     private float _currentGroundAccel;
     private bool _gamepad = false;
     private float _animationBlend;
+    public Vector3 currentVelocity { get; private set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     // void Start()
@@ -79,6 +80,7 @@ public class FPSMovementNetworked : NetworkBehaviour
             playerMesh.SetActive(false);
             playerInputComponent.enabled = true;
             playerCamera.enabled = true;
+            pauseController.enabled = true;
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

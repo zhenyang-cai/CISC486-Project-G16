@@ -2265,7 +2265,6 @@ MonoBehaviour:
   animComponent: {fileID: 8919938977401400827}
   playerMesh: {fileID: 8677638011952105641}
   pauseController: {fileID: 612125952896606454}
-  cameraRef: {fileID: 2821962772723155020}
 --- !u!114 &6118738776043782248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2842,6 +2841,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5207095978929083410}
     m_Modifications:
+    - target: {fileID: 4485982147151578214, guid: 3793379944a47374da7b37f7576f5987,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6348610937976556241, guid: 3793379944a47374da7b37f7576f5987,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2897,6 +2901,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PauseMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 7189238652742808180, guid: 3793379944a47374da7b37f7576f5987,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2909,7 +2918,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 3909086754422252688}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1e80214778306147aaddf59242aa0e3, type: 3}
   m_Name: 

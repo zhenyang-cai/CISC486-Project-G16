@@ -196,7 +196,7 @@ MonoBehaviour:
   gamepadSensitivity: 1
   verticalLookRange: 85
   characterController: {fileID: 6432074060317653951}
-  mainCamera: {fileID: 8814308031965220969}
+  playerCamera: {fileID: 8814308031965220969}
   playerInputComponent: {fileID: 4662701629226686412}
   playerMesh: {fileID: 509090554225352628}
   pauseController: {fileID: 4485982147151578214, guid: 3793379944a47374da7b37f7576f5987,
@@ -435,6 +435,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5940610475499627398}
     m_Modifications:
+    - target: {fileID: 4485982147151578214, guid: 3793379944a47374da7b37f7576f5987,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6348610937976556241, guid: 3793379944a47374da7b37f7576f5987,
         type: 3}
       propertyPath: m_LocalPosition.x

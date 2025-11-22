@@ -19,7 +19,7 @@ public class DroneMovementNetworked : NetworkBehaviour
 
     [Header("References")]
     [SerializeField] private CharacterController characterController;
-    [SerializeField] private Camera mainCamera;
+    [SerializeField] private Camera playerCamera;
     [SerializeField] private PlayerInput playerInputComponent;
     [SerializeField] private GameObject playerMesh;
     [SerializeField] private PauseMenu pauseController;
@@ -52,7 +52,18 @@ public class DroneMovementNetworked : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        playerMesh.SetActive(false);
+        if (IsOwner)
+        {
+            playerMesh.SetActive(false);
+            playerInputComponent.enabled = true;
+            playerCamera.enabled = true;
+            pauseController.enabled = true;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            GetInputRefs();
+        }
     }
     
     // Update is called once per frame
@@ -62,6 +73,9 @@ public class DroneMovementNetworked : NetworkBehaviour
         
         HandleRotation();
         HandleMovement();
+
+        if (characterController.enabled)
+            characterController.Move(_currentVelocity * Time.deltaTime);
     }
 
     // Check for gamepad usage
@@ -86,6 +100,9 @@ public class DroneMovementNetworked : NetworkBehaviour
     // Helper function for calculating desired movement direction
     private Vector3 GetMovementDirection()
     {
+        if (pauseController.paused)
+            return Vector3.zero;
+        
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         float upInput = ascendAction.ReadValue<float>();
         float downInput = descendAction.ReadValue<float>();
@@ -97,6 +114,9 @@ public class DroneMovementNetworked : NetworkBehaviour
 
     private void HandleRotation()
     {
+        if (pauseController.paused)
+            return;
+        
         Vector2 lookInput = lookAction.ReadValue<Vector2>();
 
         float usedSensitivity = _gamepad ? gamepadSensitivity : mouseSensitivity;
@@ -109,7 +129,7 @@ public class DroneMovementNetworked : NetworkBehaviour
 
         // Y rotation
         _verticalRotation = Mathf.Clamp(_verticalRotation - mouseYRotation, -verticalLookRange, verticalLookRange);
-        mainCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);
+        playerCamera.transform.localRotation = Quaternion.Euler(_verticalRotation, 0, 0);
     }
 
     private void HandleMovement()
