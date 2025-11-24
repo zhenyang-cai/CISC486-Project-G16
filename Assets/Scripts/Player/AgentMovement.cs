@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class FPSMovement : MonoBehaviour
+public class AgentMovement : MonoBehaviour
 {
     public Vector3 currentVelocity { get; private set; }
     [Header("Source movement variables")]

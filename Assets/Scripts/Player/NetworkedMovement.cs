@@ -14,7 +14,7 @@ public abstract class NetworkedMovement : NetworkBehaviour
     [SerializeField] protected Camera playerCamera;
     [SerializeField] protected PlayerInput playerInputComponent;
     [SerializeField] protected GameObject playerMesh;
-    [SerializeField] protected PauseMenu pauseController;
+    protected PauseMenu _pauseController;
 
     protected InputAction moveAction;
     protected InputAction lookAction;
@@ -32,6 +32,7 @@ public abstract class NetworkedMovement : NetworkBehaviour
         Cursor.visible = false;
 
         GetInputRefs();
+
     }
 
     public override void OnStartClient()
@@ -41,7 +42,9 @@ public abstract class NetworkedMovement : NetworkBehaviour
             playerMesh.SetActive(false);
             playerInputComponent.enabled = true;
             playerCamera.enabled = true;
-            pauseController.enabled = true;
+            playerCamera.gameObject.GetComponent<AudioListener>().enabled = true;
+            _pauseController = FindFirstObjectByType<PauseMenu>();
+            if (_pauseController is not null) _pauseController.enabled = true;
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -90,7 +93,7 @@ public abstract class NetworkedMovement : NetworkBehaviour
     // Helper function for calculating desired movement direction
     protected Vector3 GetMovementDirection()
     {
-        if (pauseController.paused)
+        if (_pauseController.paused)
             return Vector3.zero;
         
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
@@ -104,7 +107,7 @@ public abstract class NetworkedMovement : NetworkBehaviour
 
     protected void HandleRotation()
     {
-        if (pauseController.paused)
+        if (_pauseController.paused)
             return;
         
         Vector2 lookInput = lookAction.ReadValue<Vector2>();

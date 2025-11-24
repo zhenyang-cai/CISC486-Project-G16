@@ -8,7 +8,14 @@ using UnityEngine;
 public class ConnectionManager : MonoBehaviour
 {
     [SerializeField] NetworkManager networkManager;
-    [SerializeField] string gameScene;
+
+    void Awake()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (networkManager is null) networkManager = FindFirstObjectByType<NetworkManager>();
+    }
 
     // A host is simply a server and a client, so start them both.
     public void StartHost()
@@ -38,7 +45,7 @@ public class ConnectionManager : MonoBehaviour
     public void LoadScene()
     {
         // https://fish-networking.gitbook.io/docs/guides/features/scene-management/loading-scenes
-        SceneLoadData sld = new SceneLoadData(gameScene);
+        // SceneLoadData sld = new SceneLoadData(gameScene);
         
     }
 }

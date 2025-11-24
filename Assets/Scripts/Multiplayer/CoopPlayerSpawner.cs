@@ -3,39 +3,43 @@
 using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
-using FishNet.Managing.Server;
 using FishNet.Object;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CoopPlayerSpawner : MonoBehaviour
 {
-    [SerializeField] private NetworkObject agentPrefab;
-    [SerializeField] private NetworkObject dronePrefab;
-    // [SerializeField] private int requiredPlayerCount;
+    public NetworkObject agentPrefab;
+    public NetworkObject dronePrefab;
+    public Transform agentSpawn;
+    public Transform droneSpawn;
     
-    private NetworkManager networkManager;
+    [Header("UI")]
+    // public Canvas waitingText;
+
+    private NetworkManager _networkManager;
 
     private void Awake()
     {
-        networkManager = GetComponentInParent<NetworkManager>();
-        if (networkManager == null)
-            networkManager = InstanceFinder.NetworkManager;
+        _networkManager = GetComponentInParent<NetworkManager>();
+        if (_networkManager == null)
+            _networkManager = InstanceFinder.NetworkManager;
 
-        if (networkManager == null)
+        if (_networkManager == null)
         {
             Debug.LogWarning($"CountBasedPlayerSpawner cannot work as a NetworkManager couldn't be found.");
             return;
         }
 
-        networkManager.SceneManager.OnClientLoadedStartScenes += OnClientLoadedStartScenes;
+        _networkManager.SceneManager.OnClientLoadedStartScenes += OnClientLoadedStartScenes;
     }
 
     private void OnDestroy()
     {
-        if (networkManager != null)
-            networkManager.SceneManager.OnClientLoadedStartScenes -= OnClientLoadedStartScenes;
+        if (_networkManager != null)
+            _networkManager.SceneManager.OnClientLoadedStartScenes -= OnClientLoadedStartScenes;
     }
 
     private void OnClientLoadedStartScenes(NetworkConnection _, bool asServer)
@@ -43,20 +47,23 @@ public class CoopPlayerSpawner : MonoBehaviour
         if (!asServer)
             return;
 
-        List<NetworkConnection> authenticatedClients = networkManager.ServerManager.Clients.Values
+        List<NetworkConnection> authenticatedClients = _networkManager.ServerManager.Clients.Values
             .Where(conn => conn.IsAuthenticated).ToList();
 
+        // Spawn players once there's at least two
         if (authenticatedClients.Count < 2) return;
 
         NetworkObject agent = Instantiate(agentPrefab);
-        networkManager.ServerManager.Spawn(agent, authenticatedClients[0]);
+        _networkManager.ServerManager.Spawn(agent, authenticatedClients[0]);
+        agent.transform.position = agentSpawn.position;
         // If the client isn't observing this scene, make them an observer of it.
         if (!authenticatedClients[0].Scenes.Contains(gameObject.scene))
-            networkManager.SceneManager.AddOwnerToDefaultScene(agent);
+            _networkManager.SceneManager.AddOwnerToDefaultScene(agent);
 
         NetworkObject drone = Instantiate(dronePrefab);
-        networkManager.ServerManager.Spawn(drone, authenticatedClients[1]);
+        _networkManager.ServerManager.Spawn(drone, authenticatedClients[1]);
+        drone.transform.position = droneSpawn.position;
         if (!authenticatedClients[1].Scenes.Contains(gameObject.scene))
-            networkManager.SceneManager.AddOwnerToDefaultScene(drone);
+            _networkManager.SceneManager.AddOwnerToDefaultScene(drone);
     }
 }

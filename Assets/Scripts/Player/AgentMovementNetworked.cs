@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FPSMovementNetworked : NetworkedMovement
+public class AgentMovementNetworked : NetworkedMovement
 {
     [Header("Source movement variables")]
     // Source movement
