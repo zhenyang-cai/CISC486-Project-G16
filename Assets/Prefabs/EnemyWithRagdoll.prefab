@@ -231,7 +231,7 @@ PrefabInstance:
     - target: {fileID: 3083472378701596817, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
         type: 3}
       propertyPath: <AssetPathHash>k__BackingField
-      value: 5274684523134727241
+      value: 7260744109928388329
       objectReference: {fileID: 0}
     - target: {fileID: 3083472378701596817, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
         type: 3}
@@ -381,7 +381,7 @@ PrefabInstance:
     - target: {fileID: 6549693907464525852, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
         type: 3}
       propertyPath: m_Name
-      value: EnemyRagdoll
+      value: EnemyWithRagdoll
       objectReference: {fileID: 0}
     - target: {fileID: 6549693907464525852, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
         type: 3}
@@ -505,10 +505,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7138264568521885444}
-    - targetCorrespondingSourceObject: {fileID: 6549693907464525852, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2318233378041631507}
     - targetCorrespondingSourceObject: {fileID: 4177253029477754304, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
         type: 3}
       insertIndex: -1
@@ -1576,29 +1572,6 @@ MonoBehaviour:
   animator: {fileID: 7243754908021826493}
   characterController: {fileID: 4006589167496885133}
   enemyScript: {fileID: 485533851621199995}
---- !u!136 &2318233378041631507
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6396084634861657946}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6930432254038211277 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7064896110785904011, guid: 0758c2bec2fc7bc4891e9dd95ac05592,

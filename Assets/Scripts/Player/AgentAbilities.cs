@@ -5,6 +5,7 @@ using FishNet.Object;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInput))]
 public class AgentAbilities : NetworkBehaviour
 {
     [Header("Basic attack")]
@@ -18,7 +19,7 @@ public class AgentAbilities : NetworkBehaviour
 
     [Header("References")]
     public PlayerInput playerInput;
-    public Camera playerCamera;
+    // public Camera playerCamera;
     public Canvas abilityUI;
 
     InputAction attackAction;
@@ -52,10 +53,10 @@ public class AgentAbilities : NetworkBehaviour
         // print("attack");
         
         RaycastHit hit;
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
         {
             // print("hit");
-            Debug.DrawLine(playerCamera.transform.position, hit.point, Color.red, 1f);
+            Debug.DrawLine(Camera.main.transform.position, hit.point, Color.red, 1f);
             if (hit.collider.gameObject.TryGetComponent<NetworkObject>(out var netObj))
             {
                 Debug.Log($"[AgentAbilities] Client calling ServerAttack for target ObjectId={netObj.ObjectId} name={netObj.gameObject.name}");

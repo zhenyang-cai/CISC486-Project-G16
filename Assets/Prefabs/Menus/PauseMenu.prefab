@@ -690,6 +690,7 @@ MonoBehaviour:
   menu: {fileID: 1028761412468830639}
   paused: 0
   networkManager: {fileID: 0}
+  playerInput: {fileID: 0}
 --- !u!1 &7407825723700951636
 GameObject:
   m_ObjectHideFlags: 0

@@ -79,9 +79,9 @@ public class EnemyHealth : NetworkBehaviour
             foreach (var rb in _ragdollRigidbodies)
             {
                 if (rb == null) continue;
+                rb.isKinematic = false;
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
-                rb.isKinematic = false;
             }
         }
 
@@ -106,9 +106,9 @@ public class EnemyHealth : NetworkBehaviour
             foreach (var rb in _ragdollRigidbodies)
             {
                 if (rb == null) continue;
-                rb.isKinematic = true;
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
             }
         }
 

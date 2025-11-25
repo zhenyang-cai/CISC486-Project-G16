@@ -1,5 +1,6 @@
 // https://fish-networking.gitbook.io/docs/tutorials/simple/starting-fishnets-connections
 
+using FishNet;
 using FishNet.Managing;
 using FishNet.Managing.Scened;
 using UnityEditor;
@@ -7,14 +8,14 @@ using UnityEngine;
 
 public class ConnectionManager : MonoBehaviour
 {
-    [SerializeField] NetworkManager networkManager;
+    // [SerializeField] NetworkManager networkManager;
 
     void Awake()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        if (networkManager is null) networkManager = FindFirstObjectByType<NetworkManager>();
+        // if (networkManager is null) networkManager = FindFirstObjectB    yType<NetworkManager>();
     }
 
     // A host is simply a server and a client, so start them both.
@@ -27,19 +28,19 @@ public class ConnectionManager : MonoBehaviour
     // The server can be started directly from the ServerManager or Transport
     public void StartServer()
     {
-        networkManager.ServerManager.StartConnection();
+        InstanceFinder.ServerManager.StartConnection();
     }
 
     // The client can be started directly from the ClientManager or Transport
     public void StartClient()
     {
-        networkManager.ClientManager.StartConnection();
+        InstanceFinder.ClientManager.StartConnection();
     }
 
     // This is set on the Transport to indicate where the client should connect.
     public void SetIPAddress(string text)
     {
-        networkManager.TransportManager.Transport.SetClientAddress(text);
+        InstanceFinder.TransportManager.Transport.SetClientAddress(text);
     }
 
     // public void LoadScene()

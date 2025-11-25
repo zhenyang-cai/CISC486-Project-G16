@@ -4,6 +4,7 @@ using FishNet.Object;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInput))]
 public class DroneAbilities : NetworkBehaviour
 {
     [Header("Basic stun")]
@@ -20,7 +21,7 @@ public class DroneAbilities : NetworkBehaviour
 
     [Header("References")]
     public PlayerInput playerInput;
-    public Camera playerCamera;
+    // public Camera playerCamera;
     public Canvas abilityUI;
 
     InputAction attackAction;
@@ -56,8 +57,9 @@ public class DroneAbilities : NetworkBehaviour
         if (_stunCooldownTimer > 0f) return;
 
         print("attack");
-        Vector3 origin = playerCamera.transform.position;
-        Vector3 forward = playerCamera.transform.TransformDirection(Vector3.forward);
+        
+        Vector3 origin = Camera.main.transform.position;
+        Vector3 forward = Camera.main.transform.TransformDirection(Vector3.forward);
         Debug.DrawLine(origin, origin + forward * stunRange, Color.cyan, 1f);
 
         Debug.Log("[DroneAbilities] Client requesting stun via ServerStunRay");

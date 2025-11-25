@@ -4,6 +4,8 @@ using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
 using FishNet.Object;
+using FishNet.Transporting;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -34,6 +36,7 @@ public class CoopPlayerSpawner : MonoBehaviour
         }
 
         _networkManager.SceneManager.OnClientLoadedStartScenes += OnClientLoadedStartScenes;
+        _networkManager.ServerManager.OnRemoteConnectionState += OnRemoteConnectionStateChanged;
     }
 
     private void OnDestroy()
@@ -54,16 +57,26 @@ public class CoopPlayerSpawner : MonoBehaviour
         if (authenticatedClients.Count < 2) return;
 
         NetworkObject agent = Instantiate(agentPrefab);
-        _networkManager.ServerManager.Spawn(agent, authenticatedClients[0]);
         agent.transform.position = agentSpawn.position;
+        _networkManager.ServerManager.Spawn(agent, authenticatedClients[0]);
         // If the client isn't observing this scene, make them an observer of it.
         if (!authenticatedClients[0].Scenes.Contains(gameObject.scene))
             _networkManager.SceneManager.AddOwnerToDefaultScene(agent);
 
         NetworkObject drone = Instantiate(dronePrefab);
-        _networkManager.ServerManager.Spawn(drone, authenticatedClients[1]);
         drone.transform.position = droneSpawn.position;
+        _networkManager.ServerManager.Spawn(drone, authenticatedClients[1]);
         if (!authenticatedClients[1].Scenes.Contains(gameObject.scene))
             _networkManager.SceneManager.AddOwnerToDefaultScene(drone);
+    }
+    
+    private void OnRemoteConnectionStateChanged(NetworkConnection nc, RemoteConnectionStateArgs args)
+    {
+        if (args.ConnectionState == RemoteConnectionState.Stopped)
+        {
+            Debug.Log($"[CoopPlayerSpawner] Client disconnected. Closing server...");
+            if (_networkManager.IsServerStarted)
+                _networkManager.ServerManager.StopConnection(true); // disconnect everyone
+        }
     }
 }
