@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using FishNet.Object;
+using FishNet.Object.Synchronizing;
 using QFramework;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,12 +15,19 @@ public class Enemy : Entity, IController
     public EnemyAlertState AlertState { get; private set; }
     public EnemyChaseState ChaseState { get; private set; }
     public EnemyAttackState AttackState { get; private set; }
+    public EnemyStunnedState StunnedState { get; private set; }
     #endregion
 
     public List<Transform> PatrolPoints;
 
     public NavMeshAgent agent { get; private set; }
     public VisionSensor visionSensor { get; private set; }
+
+    // Cache renderer/color data for networked stun visuals.
+    SkinnedMeshRenderer _meshRenderer;
+    Color _stunOriginalColor;
+    bool _hasStunOriginalColor;
+    public readonly SyncVar<bool> stunnedVisual = new SyncVar<bool>();
 
     public override void OnStartClient()
     {
@@ -33,11 +42,20 @@ public class Enemy : Entity, IController
         agent = GetComponent<NavMeshAgent>();
         visionSensor = GetComponent<VisionSensor>();
 
+        _meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        stunnedVisual.OnChange += UpdateStunColor;
+
         IdleState = new EnemyIdleState(this);
         MoveState = new EnemyMoveState(this);
         AlertState = new EnemyAlertState(this);
         ChaseState = new EnemyChaseState(this);
         AttackState = new EnemyAttackState(this);
+        StunnedState = new EnemyStunnedState(this);
+    }
+
+    void OnDestroy()
+    {
+        stunnedVisual.OnChange -= UpdateStunColor;
     }
 
     protected override void Start()
@@ -77,4 +95,34 @@ public class Enemy : Entity, IController
         }
     }
 
+    public void ApplyStun()
+    {
+        if (!IsServerInitialized) return;
+        if (stateMachine?.CurrentState == StunnedState) return;
+
+        stateMachine?.ChangeState(StunnedState);
+    }
+
+    public void SetStunVisual(bool isActive)
+    {
+        if (!IsServerInitialized)
+            return;
+
+        stunnedVisual.Value = isActive;
+    }
+
+    void UpdateStunColor(bool previous, bool next, bool asServer)
+    {
+        if (_meshRenderer == null) _meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        if (_meshRenderer == null) return;
+
+        if (!_hasStunOriginalColor)
+        {
+            _stunOriginalColor = _meshRenderer.material.color;
+            _hasStunOriginalColor = true;
+        }
+
+        Color target = next ? Color.blue : _stunOriginalColor;
+        _meshRenderer.material.SetColor("_BaseColor", target);
+    }
 }

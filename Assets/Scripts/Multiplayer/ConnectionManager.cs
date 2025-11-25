@@ -42,10 +42,15 @@ public class ConnectionManager : MonoBehaviour
         networkManager.TransportManager.Transport.SetClientAddress(text);
     }
 
-    public void LoadScene()
+    // public void LoadScene()
+    // {
+    //     // https://fish-networking.gitbook.io/docs/guides/features/scene-management/loading-scenes
+    //     SceneLoadData sld = new SceneLoadData(gameScene);
+    // }
+
+    // This is the easiest place to put this
+    public void QuitGame()
     {
-        // https://fish-networking.gitbook.io/docs/guides/features/scene-management/loading-scenes
-        // SceneLoadData sld = new SceneLoadData(gameScene);
-        
+        Application.Quit();
     }
 }

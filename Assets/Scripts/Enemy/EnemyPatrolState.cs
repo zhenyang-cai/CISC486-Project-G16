@@ -21,12 +21,12 @@ public class EnemyPatrolState : EnemyState
     {
         base.Update();
 
-        if (enemy.visionSensor.State == VisionSensor.SuspicionState.Investigate)
+        if (enemy.visionSensor.State == VisionSensor.SuspicionState.Investigate && enemy.stateMachine.CurrentState != enemy.StunnedState)
         {
             stateMachine.ChangeState(enemy.AlertState);
             return;
         }
-        else if (enemy.visionSensor.State == VisionSensor.SuspicionState.Confirmed)
+        else if (enemy.visionSensor.State == VisionSensor.SuspicionState.Confirmed && enemy.stateMachine.CurrentState != enemy.StunnedState)
         {
             stateMachine.ChangeState(enemy.ChaseState);
             return;

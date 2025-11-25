@@ -1,4 +1,5 @@
 using System;
+using FishNet.Managing;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ public class PauseMenu : MonoBehaviour
 {
     public Canvas menu;
     public bool paused = false;
+    public NetworkManager networkManager;
 
     void Update()
     {
@@ -33,8 +35,9 @@ public class PauseMenu : MonoBehaviour
         paused = false;
     }
 
-    public void QuitGame()
+    public void Disconnect()
     {
-        Application.Quit();
+        networkManager = FindFirstObjectByType<NetworkManager>();
+        networkManager?.ClientManager.StopConnection();
     }
 }

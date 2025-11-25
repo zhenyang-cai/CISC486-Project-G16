@@ -9,7 +9,7 @@ public abstract class Entity : NetworkBehaviour
     public CharacterController controller { get; private set; }
     #endregion
     
-    public StateMachine stateMachine { get; private set; }
+    public StateMachine stateMachine { get; set; }
 
     [SerializeField] protected LayerMask GroundLayers;
     [SerializeField] protected bool isGrounded;

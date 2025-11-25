@@ -542,7 +542,7 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 229742295}
   _networkObjectCache: {fileID: 0}
-  enemyPrefab: {fileID: 3083472378701596817, guid: 0758c2bec2fc7bc4891e9dd95ac05592,
+  enemyPrefab: {fileID: 2948990468023193559, guid: ccef8316ced74ec479c0a3a5aefb6658,
     type: 3}
   PatrolPoints:
   - {fileID: 304210365}
@@ -2067,7 +2067,7 @@ PrefabInstance:
     - target: {fileID: 7189238652742808180, guid: 3793379944a47374da7b37f7576f5987,
         type: 3}
       propertyPath: m_Name
-      value: PauseController
+      value: PauseMenu
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2303,6 +2303,7 @@ GameObject:
   - component: {fileID: 3792873501237332506}
   - component: {fileID: 8935918307931803180}
   - component: {fileID: 6045658580788895434}
+  - component: {fileID: 8935918307931803181}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -3622,7 +3623,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 696266514264401800}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!4 &3823731402661403539
 Transform:
   m_ObjectHideFlags: 0
@@ -4855,6 +4856,18 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &8935918307931803181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 696266514264401800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7e7d1661f9ac7e4cba0f35525c42fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1001 &9037944973276887626
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -86,8 +86,6 @@ public abstract class NetworkedMovement : NetworkBehaviour
         lookAction = playerInputComponent.actions.FindAction("Look");
         jumpAction = playerInputComponent.actions.FindAction("Jump");
         crouchAction = playerInputComponent.actions.FindAction("Crouch");
-        // attackAction = playerInputComponent.actions.FindAction("Attack");
-        // interactAction = playerInputComponent.actions.FindAction("Interact");
     }
 
     // Helper function for calculating desired movement direction
