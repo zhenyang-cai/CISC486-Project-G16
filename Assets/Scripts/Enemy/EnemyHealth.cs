@@ -1,6 +1,7 @@
 using System.Collections;
 using FishNet.Component.Transforming;
 using FishNet.Object;
+using UnityEditor;
 using UnityEngine;
 
 public class EnemyHealth : NetworkBehaviour
@@ -11,16 +12,14 @@ public class EnemyHealth : NetworkBehaviour
     public float ragdollTimer = 5f;
     public AudioClip deathAudio;
     [Range(0, 1)] public float deathAudioVolume = 0.5f;
+    public float ragdollForce = 1500f; // How much force to apply to the death ragdoll
     
     [Header("References")]
     public Animator animator;
     public CharacterController characterController;
     public Enemy enemyScript;
+    public GameObject ragdoll;
 
-    Rigidbody[] _ragdollRigidbodies;
-    Collider[] _ragdollColliders;
-    NetworkTransform[] _childNetworkTransforms;
-    bool _ragdollInitialized = false;
     bool _isDead = false;
 
     public override void OnStartServer()
@@ -38,18 +37,11 @@ public class EnemyHealth : NetworkBehaviour
     }
 
     // DISCLOSURE: Some of the code for death ragdolling was generated using AI and verified afterwards
-    public IEnumerator Death()
+    public void Death()
     {
         // Notify observing clients so they can play ragdoll visuals / disable animator locally.
         Debug.Log("[EnemyHealth] Server starting Death(), notifying observers.");
         RpcNotifyDeath();
-
-        // Server-side: disable animation and control so server physics/logic stops.
-        if (animator != null) animator.enabled = false;
-        if (characterController != null) characterController.enabled = false;
-        if (enemyScript != null) enemyScript.enabled = false;
-
-        yield return new WaitForSeconds(ragdollTimer);
         Despawn(gameObject);
     }
 
@@ -61,84 +53,14 @@ public class EnemyHealth : NetworkBehaviour
 
         AudioSource.PlayClipAtPoint(deathAudio, transform.position, deathAudioVolume);
 
-        // Prepare ragdoll components (collect and set to safe initial state)
-        InitRagdollIfNeeded();
+        GameObject newRagdoll = Instantiate(ragdoll);
+        newRagdoll.transform.position = transform.position;
+        newRagdoll.transform.rotation = transform.rotation;
 
-        // Disable animator/character controller so transforms reflect the final animated pose
-        if (animator != null) animator.enabled = false;
-        if (characterController != null) characterController.enabled = false;
-
-        // Disable any NetworkTransform components on child bones to avoid transform smoothing
-        if (_childNetworkTransforms != null)
-        {
-            foreach (var nt in _childNetworkTransforms)
-            {
-                if (nt != null) nt.enabled = false;
-            }
-        }
-
-        // Zero velocities and enable physics on ragdoll rigidbodies
-        if (_ragdollRigidbodies != null)
-        {
-            foreach (var rb in _ragdollRigidbodies)
-            {
-                if (rb == null) continue;
-                rb.isKinematic = false;
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-            }
-        }
-
-        // Enable colliders after a FixedUpdate to avoid large impulse from initial overlap
-        if (_ragdollColliders != null && _ragdollColliders.Length > 0)
-        {
-            StartCoroutine(EnableCollidersNextFixedUpdate());
-        }
-    }
-
-    void InitRagdollIfNeeded()
-    {
-        if (_ragdollInitialized) return;
-
-        _ragdollRigidbodies = GetComponentsInChildren<Rigidbody>(true);
-        _ragdollColliders = GetComponentsInChildren<Collider>(true);
-        _childNetworkTransforms = GetComponentsInChildren<NetworkTransform>(true);
-
-        // Put rigidbodies into safe kinematic state and clear velocities
-        if (_ragdollRigidbodies != null)
-        {
-            foreach (var rb in _ragdollRigidbodies)
-            {
-                if (rb == null) continue;
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-                rb.isKinematic = true;
-            }
-        }
-
-        // Disable colliders until ragdoll activation to avoid overlap impulses
-        if (_ragdollColliders != null)
-        {
-            foreach (var col in _ragdollColliders)
-            {
-                if (col == null) continue;
-                col.enabled = false;
-            }
-        }
-
-        _ragdollInitialized = true;
-    }
-
-    IEnumerator EnableCollidersNextFixedUpdate()
-    {
-        yield return new WaitForFixedUpdate();
-        if (_ragdollColliders != null)
-        {
-            foreach (var col in _ragdollColliders)
-            {
-                if (col == null) continue;
-                col.enabled = true;
-            }
+        // adding a little force
+        Rigidbody[] bones = newRagdoll.GetComponentsInChildren<Rigidbody>();
+        foreach (Rigidbody bone in bones) {
+            bone.AddForce(-transform.forward * 1500);
         }
     }
 
@@ -150,7 +72,7 @@ public class EnemyHealth : NetworkBehaviour
         if (asServer && currentHealth <= 0f && !_isDead)
         {
             _isDead = true;
-            StartCoroutine(Death());
+            Death();
         }
     }
 }

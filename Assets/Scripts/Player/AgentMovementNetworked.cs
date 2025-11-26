@@ -135,6 +135,7 @@ public class AgentMovementNetworked : NetworkedMovement
 
             // change height and adjust position
             characterController.height = Mathf.LerpUnclamped(characterController.height, crouchHeight, crouchSmoothingSpeed * Time.deltaTime);
+            animComponent.SetBool("Crouched", true); // animate crouched
         }
         else
         {
@@ -145,6 +146,7 @@ public class AgentMovementNetworked : NetworkedMovement
 
                 // change height and adjust position
                 characterController.height = Mathf.LerpUnclamped(characterController.height, walkHeight, crouchSmoothingSpeed * Time.deltaTime);
+                animComponent.SetBool("Crouched", false); // animate uncrouched
             }
         }
         characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
