@@ -1080,18 +1080,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 86269a06bcce29a49b24e88e07c8b6c4, type: 3}
---- !u!114 &1058160627 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3500260163238271139, guid: 86269a06bcce29a49b24e88e07c8b6c4,
-    type: 3}
-  m_PrefabInstance: {fileID: 1053531300}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2c95dfde7d73b54dbbdc23155d35d36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FishNet.Runtime::FishNet.Managing.NetworkManager
 --- !u!1 &1342568197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1164,7 +1152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
-  m_FirstSelected: {fileID: 0}
+  m_FirstSelected: {fileID: 741368814}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &1342568200
@@ -1429,7 +1417,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c4bb8bc2a691a346804894289f82a12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  networkManager: {fileID: 1058160627}
 --- !u!1 &1607330964
 GameObject:
   m_ObjectHideFlags: 0

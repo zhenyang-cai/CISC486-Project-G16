@@ -18,12 +18,13 @@ public class AgentAbilities : NetworkBehaviour
     public int _reserveAmmoCount;
 
     [Header("References")]
-    public PlayerInput playerInput;
+    // public PlayerInput playerInput;
+    public PlayerInputHandler input;
     // public Camera playerCamera;
     public Canvas abilityUI;
 
-    InputAction attackAction;
-    InputAction reloadAction;
+    // InputAction attackAction;
+    // InputAction reloadAction;
     LayerMask layerMask;
 
     public override void OnStartClient()
@@ -32,9 +33,8 @@ public class AgentAbilities : NetworkBehaviour
 
         if (IsOwner)
         {
-            GetInputRefs();
-            attackAction.performed += ctx => PerformAttack();
-            reloadAction.performed += ctx => TryReload();
+            input.attackAction.performed += PerformAttack;
+            input.reloadAction.performed += TryReload;
             _currentAmmoCount = currentAmmoMax;
             _reserveAmmoCount = reserveAmmoMax;
 
@@ -44,9 +44,21 @@ public class AgentAbilities : NetworkBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        if (input is not null) 
+        {
+            if (input.attackAction is not null)
+                input.attackAction.performed -= PerformAttack;
+            
+            if (input.reloadAction is not null)
+                input.reloadAction.performed -= TryReload;
+        }
+    }
+
     // DISCLOSURE: Some of the code for performing Agent attacks over the network was AI generated
     // Perform the raycast on the client, then send the target NetworkObject to the server
-    void PerformAttack()
+    void PerformAttack(InputAction.CallbackContext ctx)
     {
         if (_currentAmmoCount == 0) return;
         _currentAmmoCount--;
@@ -65,7 +77,7 @@ public class AgentAbilities : NetworkBehaviour
         }
     }
 
-    void TryReload()
+    void TryReload(InputAction.CallbackContext ctx)
     {
         Debug.Log($"[AgentAbilities] Trying to reload. Amounts: _currentAmmoCount={_currentAmmoCount} _reserveAmmoCount={_reserveAmmoCount}");
         if (_currentAmmoCount == currentAmmoMax) return; // Ignore if full
@@ -113,9 +125,9 @@ public class AgentAbilities : NetworkBehaviour
     }
 
     // Input action refs to poll for player input
-    protected void GetInputRefs()
-    {
-        attackAction = playerInput.actions.FindAction("Attack");
-        reloadAction = playerInput.actions.FindAction("Reload");
-    }
+    // protected void GetInputRefs()
+    // {
+    //     attackAction = playerInput.actions.FindAction("Attack");
+    //     reloadAction = playerInput.actions.FindAction("Reload");
+    // }
 }

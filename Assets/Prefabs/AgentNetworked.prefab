@@ -2104,7 +2104,7 @@ GameObject:
   - component: {fileID: 960630617722377662}
   - component: {fileID: 8961887939293577064}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: AbilitiesUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2138,7 +2138,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6837979365910120129}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -2432,11 +2432,12 @@ GameObject:
   - component: {fileID: 8919938977401400827}
   - component: {fileID: 2642421076390595899}
   - component: {fileID: 3553472850956193631}
+  - component: {fileID: 2075516084625725256}
   - component: {fileID: 3227952651897264703}
+  - component: {fileID: 2520469534669601713}
   - component: {fileID: 6118738776043782248}
   - component: {fileID: 7906626371341180646}
   - component: {fileID: -5493247232134405618}
-  - component: {fileID: 2520469534669601713}
   m_Layer: 10
   m_Name: AgentNetworked
   m_TagString: Player
@@ -2541,6 +2542,24 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 2821962772723155020}
+--- !u!114 &2075516084625725256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7730701896170440783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8fbd1fce6077042bde97bdd7800150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 6118738776043782248}
+  _networkObjectCache: {fileID: 0}
+  input: {fileID: 3553472850956193631}
+  isPaused: 0
+  _pauseMenu: {fileID: 0}
 --- !u!114 &3227952651897264703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2562,6 +2581,7 @@ MonoBehaviour:
   characterController: {fileID: 2642421076390595899}
   playerCamera: {fileID: 2821962772723155020}
   playerInputComponent: {fileID: 3553472850956193631}
+  input: {fileID: 2075516084625725256}
   playerMesh: {fileID: 8677638011952105641}
   autoBhop: 0
   groundAccel: 40
@@ -2594,6 +2614,29 @@ MonoBehaviour:
   - {fileID: 8300000, guid: bc5c0714cfd709243a6b7e497cebe7f5, type: 3}
   footstepAudioVolume: 0.5
   animComponent: {fileID: 8919938977401400827}
+--- !u!114 &2520469534669601713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7730701896170440783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bc10b981b35a9442b658593db2c3e96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AgentAbilities
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 6118738776043782248}
+  _networkObjectCache: {fileID: 0}
+  damage: 10
+  currentAmmoMax: 10
+  reserveAmmoMax: 30
+  reloadTime: 2
+  _currentAmmoCount: 0
+  _reserveAmmoCount: 0
+  input: {fileID: 2075516084625725256}
+  abilityUI: {fileID: 8421801529294364557}
 --- !u!114 &6118738776043782248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2717,29 +2760,6 @@ MonoBehaviour:
   _interpolation: 2
   _clientAuthoritative: 1
   _sendToOwner: 0
---- !u!114 &2520469534669601713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7730701896170440783}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bc10b981b35a9442b658593db2c3e96, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AgentAbilities
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 6118738776043782248}
-  _networkObjectCache: {fileID: 0}
-  damage: 10
-  currentAmmoMax: 10
-  reserveAmmoMax: 30
-  reloadTime: 2
-  _currentAmmoCount: 0
-  _reserveAmmoCount: 0
-  playerInput: {fileID: 3553472850956193631}
-  abilityUI: {fileID: 8421801529294364557}
 --- !u!1 &7746596099281221858
 GameObject:
   m_ObjectHideFlags: 0

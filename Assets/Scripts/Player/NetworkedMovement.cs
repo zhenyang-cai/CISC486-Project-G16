@@ -10,19 +10,13 @@ public abstract class NetworkedMovement : NetworkBehaviour
     public float verticalLookRange = 85.0f;
 
     [Header("References")]
-    [SerializeField] protected CharacterController characterController;
-    [SerializeField] protected Camera playerCamera;
-    [SerializeField] protected PlayerInput playerInputComponent;
-    [SerializeField] protected GameObject playerMesh;
-    protected PauseMenu _pauseController;
-
-    protected InputAction moveAction;
-    protected InputAction lookAction;
-    protected InputAction jumpAction;
-    protected InputAction crouchAction;
+    public CharacterController characterController;
+    public Camera playerCamera;
+    public PlayerInput playerInputComponent;
+    public PlayerInputHandler input;
+    public GameObject playerMesh;
 
     protected Vector3 _currentVelocity;
-    protected bool _gamepad = false;
     protected float _verticalRotation;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -30,9 +24,6 @@ public abstract class NetworkedMovement : NetworkBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        GetInputRefs();
-
     }
 
     public override void OnStartClient()
@@ -40,16 +31,13 @@ public abstract class NetworkedMovement : NetworkBehaviour
         if (IsOwner)
         {
             playerMesh.SetActive(false);
-            playerInputComponent.enabled = true;
+            // playerInputComponent.enabled = true;
+            // input.enabled = true;
             playerCamera.enabled = true;
             playerCamera.gameObject.GetComponent<AudioListener>().enabled = true;
-            _pauseController = FindFirstObjectByType<PauseMenu>();
-            if (_pauseController is not null) _pauseController.enabled = true;
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-
-            GetInputRefs();
 
             OnStartExtra();
         }
@@ -71,32 +59,21 @@ public abstract class NetworkedMovement : NetworkBehaviour
 
     protected abstract void HandleMovement();
 
-    // Check for gamepad usage
-    void OnControlsChanged()
-    {
-        Debug.Log("Controls changed for player ID" + playerInputComponent.user.id);
-        var device = playerInputComponent.GetDevice<Gamepad>();
-        _gamepad = device != null;
-    }
-
     // Input action refs to poll for player input
-    protected void GetInputRefs()
-    {
-        moveAction = playerInputComponent.actions.FindAction("Move");
-        lookAction = playerInputComponent.actions.FindAction("Look");
-        jumpAction = playerInputComponent.actions.FindAction("Jump");
-        crouchAction = playerInputComponent.actions.FindAction("Crouch");
-    }
+    // protected void GetInputRefs()
+    // {
+    //     moveAction = playerInputComponent.actions.FindAction("Move");
+    //     lookAction = playerInputComponent.actions.FindAction("Look");
+    //     jumpAction = playerInputComponent.actions.FindAction("Jump");
+    //     crouchAction = playerInputComponent.actions.FindAction("Crouch");
+    // }
 
     // Helper function for calculating desired movement direction
     protected Vector3 GetMovementDirection()
-    {
-        if (_pauseController.paused)
-            return Vector3.zero;
-        
-        Vector2 moveInput = moveAction.ReadValue<Vector2>();
-        float upInput = jumpAction.ReadValue<float>();
-        float downInput = crouchAction.ReadValue<float>();
+    {      
+        Vector2 moveInput = input.moveAction.ReadValue<Vector2>();
+        float upInput = input.jumpAction.ReadValue<float>();
+        float downInput = input.crouchAction.ReadValue<float>();
 
         Vector3 inputDirection = new Vector3(moveInput.x, upInput - downInput, moveInput.y);
         Vector3 worldDirection = transform.TransformDirection(inputDirection);
@@ -105,12 +82,9 @@ public abstract class NetworkedMovement : NetworkBehaviour
 
     protected void HandleRotation()
     {
-        if (_pauseController.paused)
-            return;
-        
-        Vector2 lookInput = lookAction.ReadValue<Vector2>();
+        Vector2 lookInput = input.lookAction.ReadValue<Vector2>();
 
-        float usedSensitivity = _gamepad ? gamepadSensitivity : mouseSensitivity;
+        float usedSensitivity = input.gamepad ? gamepadSensitivity : mouseSensitivity;
 
         float mouseXRotation = lookInput.x * usedSensitivity;
         float mouseYRotation = lookInput.y * usedSensitivity;

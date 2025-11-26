@@ -1,30 +1,27 @@
-using System;
-using FishNet.Managing;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
     public Canvas menu;
     public bool paused = false;
-    public NetworkManager networkManager;
 
-    void Update()
+    public void TogglePause()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (paused)
-            {
-                Resume();
-            } 
-            else
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                menu.enabled = true;
-                paused = true;                
-            }
-        }
+        if (!paused)
+            Pause();
+        else
+            Resume();
+    }
+
+    public void Pause()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        menu.enabled = true;
+        paused = true;
+
+        PlayerInputHandler playerInputHandler = FindFirstObjectByType<PlayerInputHandler>();
+        playerInputHandler?.ActionMapPause();
     }
 
     public void Resume()
@@ -33,11 +30,15 @@ public class PauseMenu : MonoBehaviour
         Cursor.visible = false;
         menu.enabled = false;
         paused = false;
+
+        PlayerInputHandler playerInputHandler = FindFirstObjectByType<PlayerInputHandler>();
+        playerInputHandler?.ActionMapResume();
     }
 
     public void Disconnect()
     {
-        networkManager = FindFirstObjectByType<NetworkManager>();
-        networkManager?.ClientManager.StopConnection();
+        FishNet.InstanceFinder.NetworkManager.ClientManager.StopConnection();
+        // _networkManager = FindFirstObjectByType<NetworkManager>();
+        // _networkManager?.ClientManager.StopConnection();
     }
 }

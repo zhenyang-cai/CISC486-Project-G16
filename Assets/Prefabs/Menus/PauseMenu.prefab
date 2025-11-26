@@ -652,6 +652,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6348610937976556241}
   - component: {fileID: 4485982147151578214}
+  - component: {fileID: 2133667871437229354}
+  - component: {fileID: 599968318908755220}
   m_Layer: 0
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -689,8 +691,63 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
   menu: {fileID: 1028761412468830639}
   paused: 0
-  networkManager: {fileID: 0}
-  playerInput: {fileID: 0}
+--- !u!114 &2133667871437229354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7189238652742808180}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventSystem
+  m_FirstSelected: {fileID: 1821233883598442778}
+  m_sendNavigationEvents: 1
+  m_DragThreshold: 10
+--- !u!114 &599968318908755220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7189238652742808180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.UI.InputSystemUIInputModule
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_PointAction: {fileID: -1654692200621890270, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_MoveAction: {fileID: -8784545083839296357, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_SubmitAction: {fileID: 392368643174621059, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_CancelAction: {fileID: 7727032971491509709, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_LeftClickAction: {fileID: 3001919216989983466, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_MiddleClickAction: {fileID: -2185481485913320682, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_RightClickAction: {fileID: -4090225696740746782, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_ScrollWheelAction: {fileID: 6240969308177333660, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: 6564999863303420839, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 7970375526676320489, guid: fa21f8693ab0b5542991c770864d0f7a,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &7407825723700951636
 GameObject:
   m_ObjectHideFlags: 0

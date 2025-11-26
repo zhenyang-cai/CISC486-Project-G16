@@ -75,7 +75,7 @@ public class AgentMovementNetworked : NetworkedMovement
         _animationBlend = Mathf.Lerp(_animationBlend, prevVelocity.magnitude, _currentVelocity.magnitude);
         if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-        float inputMagnitude = _gamepad ? moveAction.ReadValue<Vector2>().magnitude : 1f;
+        float inputMagnitude = input.gamepad ? input.moveAction.ReadValue<Vector2>().magnitude : 1f;
 
         animComponent.SetFloat("Speed", _animationBlend);
         animComponent.SetFloat("MotionSpeed", inputMagnitude);
@@ -126,7 +126,7 @@ public class AgentMovementNetworked : NetworkedMovement
 
     private void HandleCrouching()
     {
-        float crouchState = crouchAction.ReadValue<float>();
+        float crouchState = input.crouchAction.ReadValue<float>();
 
         if (crouchState == 1f)
         {
@@ -157,13 +157,13 @@ public class AgentMovementNetworked : NetworkedMovement
         {
             animComponent.SetBool("Jump", false);
             animComponent.SetBool("FreeFall", false);
-            if (autoBhop && jumpAction.IsPressed()) {
+            if (autoBhop && input.jumpAction.IsPressed()) {
                 {
                     _currentVelocity = new Vector3(_currentVelocity.x, jumpForce, _currentVelocity.z);
                     animComponent.SetBool("Jump", true);
                 }
             }
-            else if (jumpAction.WasPressedThisFrame())
+            else if (input.jumpAction.WasPressedThisFrame())
             {
                 _currentVelocity = new Vector3(_currentVelocity.x, jumpForce, _currentVelocity.z);
                 animComponent.SetBool("Jump", true);

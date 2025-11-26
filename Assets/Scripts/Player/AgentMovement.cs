@@ -35,25 +35,25 @@ public class AgentMovement : MonoBehaviour
     public float crouchCameraHeight = 0.8f;
 
     [Header("References")]
-    [SerializeField] private CharacterController characterController;
-    [SerializeField] private Camera playerCamera;
-    [SerializeField] private PlayerInput playerInputComponent;
-    [SerializeField] private Animator animComponent;
+    public CharacterController characterController;
+    public Camera playerCamera;
+    // [SerializeField] private PlayerInput playerInputComponent;
+    public Animator animComponent;
+    public PlayerInputHandler input;
 
-    private InputAction moveAction;
-    private InputAction lookAction;
-    private InputAction jumpAction;
-    private InputAction crouchAction;
-    // [HideInInspector] public InputAction sprintAction;
-    // [HideInInspector] public InputAction attackAction;
-    // [HideInInspector] public InputAction interactAction;
+    // InputAction moveAction;
+    // InputAction lookAction;
+    // InputAction jumpAction;
+    // InputAction crouchAction;
+    // InputAction attackAction;
+    // InputAction interactAction;
 
     // Private variables
 
     private float _verticalRotation;
     private float _currentGroundSpeedMax;
     private float _currentGroundAccel;
-    private bool _gamepad = false;
+    // private bool _gamepad = false;
     private float _animationBlend;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -64,8 +64,6 @@ public class AgentMovement : MonoBehaviour
 
         _currentGroundSpeedMax = groundSpeedMax;
         _currentGroundAccel = groundAccel;
-
-        GetInputRefs();
     }
 
     // Update is called once per frame
@@ -81,40 +79,20 @@ public class AgentMovement : MonoBehaviour
             characterController.Move(currentVelocity * Time.deltaTime);
     }
 
-    private void OnControlsChanged()
-    {
-        Debug.Log("Controls changed for player ID" + playerInputComponent.user.id);
-        var device = playerInputComponent.GetDevice<Gamepad>();
-        _gamepad = device != null;
-    }
-
-    // Input action refs to poll for player input
-    private void GetInputRefs()
-    {
-        moveAction = playerInputComponent.actions.FindAction("Move");
-        lookAction = playerInputComponent.actions.FindAction("Look");
-        jumpAction = playerInputComponent.actions.FindAction("Jump");
-        crouchAction = playerInputComponent.actions.FindAction("Crouch");
-        // sprintAction = playerInputComponent.actions.FindAction("Sprint");
-        // attackAction = playerInputComponent.actions.FindAction("Attack");
-        // interactAction = playerInputComponent.actions.FindAction("Interact");
-    }
-
     // Helper function for calculating desired movement direction
     private Vector3 GetMovementDirection()
     {
-        Vector2 moveInput = moveAction.ReadValue<Vector2>();
+        Vector2 moveInput = input.moveAction.ReadValue<Vector2>();
         Vector3 inputDirection = new Vector3(moveInput.x, 0, moveInput.y);
         Vector3 worldDirection = transform.TransformDirection(inputDirection);
-        // return worldDirection.normalized;
         return worldDirection;
     }
 
     private void HandleRotation()
     {
-        Vector2 lookInput = lookAction.ReadValue<Vector2>();
+        Vector2 lookInput = input.lookAction.ReadValue<Vector2>();
 
-        float usedSensitivity = _gamepad ? gamepadSensitivity : mouseSensitivity;
+        float usedSensitivity = input.gamepad ? gamepadSensitivity : mouseSensitivity;
 
         float mouseXRotation = lookInput.x * usedSensitivity;
         float mouseYRotation = lookInput.y * usedSensitivity;
@@ -133,17 +111,15 @@ public class AgentMovement : MonoBehaviour
         {
             animComponent.SetBool("Jump", false);
             animComponent.SetBool("FreeFall", false);
-            if (autoBhop && jumpAction.IsPressed()) {
+            if (autoBhop && input.jumpAction.IsPressed()) {
                 {
                     currentVelocity = new Vector3(currentVelocity.x, jumpForce, currentVelocity.z);
                     animComponent.SetBool("Jump", true);
-                    // currentVelocity.y = jumpForce;
                 }
             }
-            else if (jumpAction.WasPressedThisFrame())
+            else if (input.jumpAction.WasPressedThisFrame())
             {
                 currentVelocity = new Vector3(currentVelocity.x, jumpForce, currentVelocity.z);
-                // currentVelocity.y = jumpForce;
                 animComponent.SetBool("Jump", true);
             }
         }
@@ -151,7 +127,6 @@ public class AgentMovement : MonoBehaviour
         {
             animComponent.SetBool("FreeFall", true);
             currentVelocity = new Vector3(currentVelocity.x, currentVelocity.y + Physics.gravity.y * gravityMultiplier * Time.deltaTime, currentVelocity.z);
-            // currentVelocity.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
         }
     }
 
@@ -170,7 +145,7 @@ public class AgentMovement : MonoBehaviour
         _animationBlend = Mathf.Lerp(_animationBlend, prevVelocity.magnitude, currentVelocity.magnitude);
         if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-        float inputMagnitude = _gamepad ? moveAction.ReadValue<Vector2>().magnitude : 1f;
+        float inputMagnitude = input.gamepad ? input.moveAction.ReadValue<Vector2>().magnitude : 1f;
 
         animComponent.SetFloat("Speed", _animationBlend);
         animComponent.SetFloat("MotionSpeed", inputMagnitude);
@@ -222,9 +197,7 @@ public class AgentMovement : MonoBehaviour
     // Handle crouching
     private void HandleCrouching()
     {
-        float crouchState = crouchAction.ReadValue<float>();
-
-        // Vector3 currentPosition = characterController.center;
+        float crouchState = input.crouchAction.ReadValue<float>();
 
         if (crouchState == 1f)
         {
@@ -232,10 +205,7 @@ public class AgentMovement : MonoBehaviour
             _currentGroundAccel = crouchAccel;
 
             // change height and adjust position
-            // characterController.height = crouchHeight;
             characterController.height = Mathf.LerpUnclamped(characterController.height, crouchHeight, crouchSmoothingSpeed * Time.deltaTime);
-            // characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
-            // playerCamera.transform.localPosition = new Vector3(playerCamera.transform.localPosition.x, cameraHeight * (characterController.height / walkHeight), playerCamera.transform.localPosition.z);
         }
         else
         {
@@ -246,8 +216,6 @@ public class AgentMovement : MonoBehaviour
 
                 // change height and adjust position
                 characterController.height = Mathf.LerpUnclamped(characterController.height, walkHeight, crouchSmoothingSpeed * Time.deltaTime);
-                // characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
-                // playerCamera.transform.localPosition = new Vector3(playerCamera.transform.localPosition.x, cameraHeight * (characterController.height / walkHeight), playerCamera.transform.localPosition.z);
             }
         }
         characterController.center = new Vector3(characterController.center.x, characterController.height / 2, characterController.center.z);
@@ -267,9 +235,6 @@ public class AgentMovement : MonoBehaviour
             {
                 currentVelocity = reflectedVelocity * 0.5f;
             }
-            // Debug.DrawRay(hit.point, currentVelocity, new Color(0f, 1f, 0f), 10f);
-            // Debug.DrawRay(hit.point, hit.normal, new Color(1f, 1f, 1f), 10f);
-            // Debug.DrawRay(hit.point, oldVelocity, new Color(1f, 0f, 0f), 10f);
         }
         // When colliding with a wall, slide velocity along it
         else if ((characterController.collisionFlags & CollisionFlags.Sides) != 0)

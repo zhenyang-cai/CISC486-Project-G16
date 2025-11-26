@@ -20,12 +20,11 @@ public class DroneAbilities : NetworkBehaviour
     public float abilityDuration = 10f;
 
     [Header("References")]
-    public PlayerInput playerInput;
+    // public PlayerInput playerInput;
+    public PlayerInputHandler input;
     // public Camera playerCamera;
     public Canvas abilityUI;
 
-    InputAction attackAction;
-    InputAction interactAction;
     LayerMask layerMask;
 
     public override void OnStartClient()
@@ -34,13 +33,19 @@ public class DroneAbilities : NetworkBehaviour
 
         if (IsOwner)
         {
-            GetInputRefs();
-            attackAction.performed += ctx => PerformAttack();
+            input.attackAction.performed += PerformAttack;
 
             abilityUI.enabled = true;
 
             layerMask = LayerMask.GetMask("Enemy", "Ground");
         }
+    }
+
+    void OnDestroy()
+    {
+        if (input is not null)
+            if (input.attackAction is not null)
+                input.attackAction.performed -= PerformAttack;
     }
 
     void FixedUpdate()
@@ -52,7 +57,7 @@ public class DroneAbilities : NetworkBehaviour
     }
 
 
-    void PerformAttack()
+    void PerformAttack(InputAction.CallbackContext ctx)
     {
         if (_stunCooldownTimer > 0f) return;
 
@@ -95,12 +100,5 @@ public class DroneAbilities : NetworkBehaviour
     void TargetStartStunCooldown(NetworkConnection conn)
     {
         _stunCooldownTimer = stunCooldown;
-    }
-
-    // Input action refs to poll for player input
-    protected void GetInputRefs()
-    {
-        attackAction = playerInput.actions.FindAction("Attack");
-        interactAction = playerInput.actions.FindAction("Interact");
     }
 }
