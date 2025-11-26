@@ -2251,9 +2251,9 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 43714b68324cc2c409d534d9874f2a2b, type: 2}
-  - {fileID: 2100000, guid: 766fd3ff04aab4745a764d33daac86fa, type: 2}
-  - {fileID: 2100000, guid: 8b25e99361ac31d4e9ae83c46aee69ea, type: 2}
+  - {fileID: 2100000, guid: 3f8094c657b7fc94e83033d1b4d7abc3, type: 2}
+  - {fileID: 2100000, guid: d795b51fa147a84439d4993f2ce569cb, type: 2}
+  - {fileID: 2100000, guid: 2bebff0959ed7df45ac9e616e1dcdd39, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2630,17 +2630,15 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 6118738776043782248}
   _networkObjectCache: {fileID: 0}
   damage: 10
-  attackAudio: {fileID: 8300000, guid: 77c8355863ec9a64397901d1fcd273e0, type: 3}
-  attackAudioVolume: 0.5
   currentAmmoMax: 10
   reserveAmmoMax: 30
   reloadTime: 2
+  attackAudio: {fileID: 8300000, guid: 77c8355863ec9a64397901d1fcd273e0, type: 3}
+  attackAudioVolume: 0.5
   reloadAudioPt1: {fileID: 8300000, guid: 10d1b508c47ced0428dd49a8b1cf65fe, type: 3}
   reloadAudioPt1Volume: 0.5
   reloadAudioPt2: {fileID: 8300000, guid: b0ca77b89935b6e449d9ffb9310ce889, type: 3}
   reloadAudioPt2Volume: 0.5
-  _currentAmmoCount: 0
-  _reserveAmmoCount: 0
   input: {fileID: 2075516084625725256}
   abilityUI: {fileID: 8421801529294364557}
 --- !u!114 &6118738776043782248
