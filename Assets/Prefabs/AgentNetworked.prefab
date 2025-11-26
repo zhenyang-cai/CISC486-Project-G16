@@ -2630,9 +2630,15 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 6118738776043782248}
   _networkObjectCache: {fileID: 0}
   damage: 10
+  attackAudio: {fileID: 8300000, guid: 77c8355863ec9a64397901d1fcd273e0, type: 3}
+  attackAudioVolume: 0.5
   currentAmmoMax: 10
   reserveAmmoMax: 30
   reloadTime: 2
+  reloadAudioPt1: {fileID: 8300000, guid: 10d1b508c47ced0428dd49a8b1cf65fe, type: 3}
+  reloadAudioPt1Volume: 0.5
+  reloadAudioPt2: {fileID: 8300000, guid: b0ca77b89935b6e449d9ffb9310ce889, type: 3}
+  reloadAudioPt2Volume: 0.5
   _currentAmmoCount: 0
   _reserveAmmoCount: 0
   input: {fileID: 2075516084625725256}

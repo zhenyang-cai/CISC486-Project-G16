@@ -18,6 +18,7 @@ public class ConnectionManager : MonoBehaviour
     // A host is simply a server and a client, so start them both.
     public void StartHost()
     {
+        networkManager.TransportManager.Transport.SetClientAddress("localhost");
         StartServer();
         StartClient();
     }

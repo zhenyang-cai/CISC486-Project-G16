@@ -43,10 +43,12 @@ public class PlayerInputHandler : NetworkBehaviour {
             // Pause menu stuff
             menuAction = input.actions.FindActionMap("Player").FindAction("Menu");
             menuUIAction = input.actions.FindActionMap("UI").FindAction("Menu");
+
             if (_pauseMenu is null) _pauseMenu = FindFirstObjectByType<PauseMenu>();
             _pauseMenu.enabled = true;
             _pauseMenu.gameObject.GetComponent<EventSystem>().enabled = true;
             input.uiInputModule = _pauseMenu.gameObject.GetComponent<InputSystemUIInputModule>();
+            
             menuAction.performed += OnPause;
             menuUIAction.performed += OnPause;
         }

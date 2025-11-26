@@ -9,6 +9,8 @@ public class EnemyHealth : NetworkBehaviour
     public float startingHealth;
     public float currentHealth;
     public float ragdollTimer = 5f;
+    public AudioClip deathAudio;
+    [Range(0, 1)] public float deathAudioVolume = 0.5f;
     
     [Header("References")]
     public Animator animator;
@@ -56,6 +58,8 @@ public class EnemyHealth : NetworkBehaviour
     void RpcNotifyDeath()
     {
         Debug.Log($"[EnemyHealth] RpcNotifyDeath received on client for {gameObject.name}");
+
+        AudioSource.PlayClipAtPoint(deathAudio, transform.position, deathAudioVolume);
 
         // Prepare ragdoll components (collect and set to safe initial state)
         InitRagdollIfNeeded();

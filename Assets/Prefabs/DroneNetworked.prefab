@@ -242,6 +242,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 0}
   input: {fileID: 4662701629226686412}
   isPaused: 0
+  _pauseMenu: {fileID: 0}
 --- !u!114 &3241377478299529557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,6 +290,8 @@ MonoBehaviour:
   stunDuration: 5
   stunCooldown: 10
   stunRange: 30
+  stunAudio: {fileID: 8300000, guid: febbbea4a0d62f24d82ce97d3799d15f, type: 3}
+  stunAudioVolume: 0.5
   _stunCooldownTimer: 0
   distraction: {fileID: 0}
   abilityRadius: 50

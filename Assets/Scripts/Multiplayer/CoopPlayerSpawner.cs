@@ -43,6 +43,7 @@ public class CoopPlayerSpawner : MonoBehaviour
     {
         if (_networkManager != null)
             _networkManager.SceneManager.OnClientLoadedStartScenes -= OnClientLoadedStartScenes;
+            _networkManager.ServerManager.OnRemoteConnectionState -= OnRemoteConnectionStateChanged;
     }
 
     private void OnClientLoadedStartScenes(NetworkConnection _, bool asServer)
@@ -52,6 +53,8 @@ public class CoopPlayerSpawner : MonoBehaviour
 
         List<NetworkConnection> authenticatedClients = _networkManager.ServerManager.Clients.Values
             .Where(conn => conn.IsAuthenticated).ToList();
+
+        Debug.Log($"[CoopPLayerSpawner] authenticatedClients.count={authenticatedClients.Count} authenticatedClients={authenticatedClients}");
 
         // Spawn players once there's at least two
         if (authenticatedClients.Count < 2) return;
@@ -71,7 +74,7 @@ public class CoopPlayerSpawner : MonoBehaviour
     }
     
     private void OnRemoteConnectionStateChanged(NetworkConnection nc, RemoteConnectionStateArgs args)
-    {
+    {        
         if (args.ConnectionState == RemoteConnectionState.Stopped)
         {
             Debug.Log($"[CoopPlayerSpawner] Client disconnected. Closing server...");

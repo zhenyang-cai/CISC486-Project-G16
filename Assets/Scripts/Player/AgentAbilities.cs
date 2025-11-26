@@ -13,9 +13,17 @@ public class AgentAbilities : NetworkBehaviour
     public int currentAmmoMax = 10;
     public int reserveAmmoMax = 30;
     public float reloadTime = 2f;
+    public int _currentAmmoCount { get; private set; }
+    public int _reserveAmmoCount { get; private set; }
 
-    public int _currentAmmoCount;
-    public int _reserveAmmoCount;
+    [Header("Audio")]
+    public AudioClip attackAudio;
+    [Range(0, 1)] public float attackAudioVolume = 0.5f;
+    public AudioClip reloadAudioPt1;
+    [Range(0, 1)] public float reloadAudioPt1Volume = 0.5f;
+    public AudioClip reloadAudioPt2;
+    [Range(0, 1)] public float reloadAudioPt2Volume = 0.5f;
+
 
     [Header("References")]
     // public PlayerInput playerInput;
@@ -62,7 +70,9 @@ public class AgentAbilities : NetworkBehaviour
     {
         if (_currentAmmoCount == 0) return;
         _currentAmmoCount--;
-        // print("attack");
+
+        // Play audio
+        NotifyPlayAttackSound();
         
         RaycastHit hit;
         if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
@@ -88,6 +98,7 @@ public class AgentAbilities : NetworkBehaviour
 
     IEnumerator PerformReload()
     {
+        NotifyPlayReloadPt1Sound();
         int diff = currentAmmoMax - _currentAmmoCount;
         int reloadAmount = Mathf.Clamp(diff, 1, _reserveAmmoCount);
 
@@ -96,6 +107,7 @@ public class AgentAbilities : NetworkBehaviour
         _currentAmmoCount = 0;
         yield return new WaitForSeconds(reloadTime);
         
+        NotifyPlayReloadPt2Sound();
         _reserveAmmoCount -= reloadAmount;
         _currentAmmoCount += currentAmmoStored + reloadAmount;
         Debug.Log($"[AgentAbilities] Completed reload. New amounts: _currentAmmoCount={_currentAmmoCount} _reserveAmmoCount={_reserveAmmoCount}");
@@ -103,7 +115,7 @@ public class AgentAbilities : NetworkBehaviour
     
     [ServerRpc(RequireOwnership = false)]
     public void ServerAttack(NetworkObject target)
-    {
+    {        
         Debug.Log($"[AgentAbilities] ServerAttack invoked on server. Target={target}");
         if (target == null)
         {
@@ -124,10 +136,21 @@ public class AgentAbilities : NetworkBehaviour
         Debug.Log($"[AgentAbilities] Applied damage {damage}. Health {before} -> {after}");
     }
 
-    // Input action refs to poll for player input
-    // protected void GetInputRefs()
-    // {
-    //     attackAction = playerInput.actions.FindAction("Attack");
-    //     reloadAction = playerInput.actions.FindAction("Reload");
-    // }
+    [ObserversRpc]
+    public void NotifyPlayAttackSound() 
+    {
+        AudioSource.PlayClipAtPoint(attackAudio, transform.position, attackAudioVolume);
+    }
+
+    [ObserversRpc]
+    public void NotifyPlayReloadPt1Sound() 
+    {
+        AudioSource.PlayClipAtPoint(reloadAudioPt1, transform.position, reloadAudioPt1Volume);
+    }
+
+    [ObserversRpc]
+    public void NotifyPlayReloadPt2Sound() 
+    {
+        AudioSource.PlayClipAtPoint(reloadAudioPt2, transform.position, reloadAudioPt2Volume);
+    }
 }

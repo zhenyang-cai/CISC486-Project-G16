@@ -126,7 +126,6 @@ public class DroneMovement : MonoBehaviour
             // Getting projected velocity
             Vector3 projectedVelocity = Vector3.ProjectOnPlane(currentVelocity, hit.normal);
             currentVelocity = projectedVelocity;
-            // Debug.DrawRay(hit.point, projectedVelocity, Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f), 10f);
         }
     }
 }

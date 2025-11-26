@@ -11,6 +11,8 @@ public class DroneAbilities : NetworkBehaviour
     public float stunDuration = 5f;
     public float stunCooldown = 10f;
     public float stunRange = 30f;
+    public AudioClip stunAudio;
+    [Range(0, 1)] public float stunAudioVolume = 0.5f;
 
     public float _stunCooldownTimer = 0f;
 
@@ -56,7 +58,7 @@ public class DroneAbilities : NetworkBehaviour
         }
     }
 
-
+    // DISCLOSURE: Some of the code for performing Drone stuns over the network was AI generated
     void PerformAttack(InputAction.CallbackContext ctx)
     {
         if (_stunCooldownTimer > 0f) return;
@@ -92,8 +94,15 @@ public class DroneAbilities : NetworkBehaviour
         }
 
         enemy.ApplyStun();
+        NotifyPlayStunSound();
         if (Owner != null)
             TargetStartStunCooldown(Owner);
+    }
+
+    [ObserversRpc]
+    private void NotifyPlayStunSound() 
+    {
+        AudioSource.PlayClipAtPoint(stunAudio, transform.position, stunAudioVolume); // play audio for everyone
     }
 
     [TargetRpc]

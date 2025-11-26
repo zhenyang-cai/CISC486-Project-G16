@@ -30,6 +30,8 @@ public class DroneMovementNetworked : NetworkedMovement
     protected override void HandleMovement()
     {
         Vector3 desiredMovement = GetMovementDirection();
+        float upInput = input.jumpAction.ReadValue<float>();
+        float downInput = input.crouchAction.ReadValue<float>();
 
         // Vertical movement
         if (desiredMovement.y == 0)
@@ -39,7 +41,7 @@ public class DroneMovementNetworked : NetworkedMovement
         }
         else
         {
-            _currentVelocity.y += desiredMovement.y * airVerticalAccel * Time.deltaTime;
+            _currentVelocity.y += (upInput - downInput) * airVerticalAccel * Time.deltaTime;
             // clamp vertical speed
             _currentVelocity.y = Mathf.Clamp(_currentVelocity.y, -airVerticalMaxSpeed, airVerticalMaxSpeed);
         }

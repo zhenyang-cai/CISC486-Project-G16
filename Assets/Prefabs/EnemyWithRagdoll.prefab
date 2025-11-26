@@ -1569,6 +1569,8 @@ MonoBehaviour:
   startingHealth: 100
   currentHealth: 100
   ragdollTimer: 20
+  deathAudio: {fileID: 8300000, guid: 8f9628e52ced55c46849b22a4ab4f253, type: 3}
+  deathAudioVolume: 0.3
   animator: {fileID: 7243754908021826493}
   characterController: {fileID: 4006589167496885133}
   enemyScript: {fileID: 485533851621199995}
